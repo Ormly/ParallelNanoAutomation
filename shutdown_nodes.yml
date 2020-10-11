@@ -1,0 +1,23 @@
+
+---
+- hosts: nodes
+  gather_facts: no
+  tasks: 
+    - name: shutdown
+      become: yes
+      shell: sleep 2 && /sbin/shutdown -c  &&/sbin/shutdown -h now
+      async: 1
+      poll: 0
+
+    - name: store actual host to be used with local_action
+      set_fact:
+        original_host: "{{ ansible_host }}"
+
+    - name: wait for ping loss
+      local_action: shell ping -q -c 5 -W 5 {{ original_host }}
+      register: res
+      retries: 5
+      until: ('100% packet loss' in res.stdout)
+      failed_when: ('100% packet loss' not in res.stdout)
+      changed_when: no
+
