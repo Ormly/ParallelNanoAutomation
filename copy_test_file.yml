@@ -1,8 +1,0 @@
----
-- hosts: nodes
-  become: yes
-  tasks:
-  - name: copy test.txt to node
-    copy: 
-          src: ~/ansible_play/test.txt
-          dest: /home/pi

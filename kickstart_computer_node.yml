@@ -1,0 +1,21 @@
+---
+- name: set up computer nodes
+  hosts: "{{target}}"
+  become: yes
+
+  tasks:
+    - name: execute the script
+      script: ~/ansible_play/compute_node_setup.bash
+      register: output
+
+    - debug: var=output.stdout_lines
+
+    - name: reboot
+      reboot: 
+
+    - name: check the uptime after reboot
+      shell: uptime
+      register: uptime_post_reboot
+
+    - debug: msg={{ uptime_post_reboot.stdout }}
+    

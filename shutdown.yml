@@ -1,6 +1,6 @@
 
 ---
-- hosts: nodes
+- hosts: "{{ target }}"
   gather_facts: no
   tasks: 
     - name: shutdown
