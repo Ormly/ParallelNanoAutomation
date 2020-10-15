@@ -1,5 +1,6 @@
 #!/bin/bash
 #Updates, timezone and hostname
+echo "Waiting for network..."
 until ping -c1 www.google.com >/dev/null 2>&1; do :; done
 apt update -y
 apt full-upgrade -y
@@ -49,16 +50,26 @@ EOF
 
 #NFS setup
 apt-get install nfs-common -y
-
 cat >> /etc/fstab << EOF
 # pjama related mounts
 bobby:/nfs/home /nfs/home nfs rw,soft,x-systemd.automount 0 0
 EOF
-
 mkdir /nfs /nfs/home
 
 #Finishing up
 apt-get install openssh-server build-essential mpich -y
+
+#MPI
+apt install gcc g++ git make -y
+cd /opt/
+wget https://download.open-mpi.org/release/open-mpi/v4.0/openmpi-4.0.5.tar.gz -O openmpi.tar.gz
+tar -xzvf openmpi.tar.gz
+rm openmpi.tar.gz
+chmod 777 open-mpi/
+cd openmpi-4.0.5/
+./configure --prefix=/usr/local --enable-heterogeneous
+make all install
+ldconfig
 
 #Give a hint to Ansible this is done
 echo "Script is done"
