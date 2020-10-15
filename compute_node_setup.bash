@@ -60,4 +60,5 @@ mkdir /nfs /nfs/home
 #Finishing up
 apt-get install openssh-server build-essential mpich -y
 
-reboot
+#Give a hint to Ansible this is done
+echo "Script is done"
