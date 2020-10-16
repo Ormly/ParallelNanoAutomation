@@ -683,11 +683,6 @@ EOF
 
 systemctl restart nis
 
-# Add user johnny to database
-addgroup --gid 1110 pjama-group
-useradd -m -p $(openssl passwd -crypt johnny) -s /bin/bash johnny -g pjama-group -d /nfs/home/johnny
-make -C /var/yp
-
 cat > create_user << EOF
 #!/bin/bash
 #Takes can take in 0..2 parameters
@@ -718,7 +713,8 @@ else
 	password="\$1"
 fi
 
-useradd "\$username" -m -p \$(openssl passwd -crypt "\$password") -s /bin/bash -g pjama-group -d /nfs/home/"\$username"
+adduser "\$username" --quiet --disabled-password --ingroup pjama-group --home /nfs/home/"\$username" --gecos "\$username"
+echo "\$username:\$password" | chpasswd
 make -C /var/yp
 EOF
 
@@ -734,6 +730,11 @@ EOF
 
 chmod 777 create_user
 chmod 777 remove_user
+
+# Add user johnny to database
+addgroup --gid 1110 pjama-group
+./create_user johnny
+
 apt-get install openssh-server build-essential mpich -y
 
 reboot

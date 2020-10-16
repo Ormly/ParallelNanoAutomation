@@ -27,5 +27,6 @@ else
 	password="$1"
 fi
 
-useradd "$username" -m -p $(openssl passwd -crypt "$password") -s /bin/bash -g pjama-group -d /nfs/home/"$username"
+adduser "$username" --quiet --disabled-password --ingroup pjama-group --home /nfs/home/"$username" --gecos "$username"
+echo "$username:$password" | chpasswd
 make -C /var/yp
