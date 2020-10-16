@@ -683,10 +683,58 @@ EOF
 
 systemctl restart nis
 
-# Add user to database
-addgroup --gid 1110 pjama-group
-useradd -m -p $(openssl passwd -crypt johnny) -s /bin/bash johnny -g pjama-group -d /nfs/home/johnny
+cat > create_user << EOF
+#!/bin/bash
+#Takes can take in 0..2 parameters
+#0 parameters - prompts for username and password
+#1 parameter - user is created with username and password as parameter
+#2 parameters - user is created with username as first parameter and password as second parameter
+username=
+password=
+
+#If no parameters are given
+if [ "\$1" == "" ]; then
+	echo -n "Enter a username: "
+	read username
+	echo -n "Enter a password: ["\$username"] "
+	read password
+	if [ "\$password" == "" ]; then
+		password="\$username"
+	fi
+
+#If username and password are given
+elif [ "\$1" != "" ] && [ "\$2" != "" ]; then
+	username="\$1"
+	password="\$2"
+
+#If username is given
+else
+	username="\$1"
+	password="\$1"
+fi
+
+adduser "\$username" --quiet --disabled-password --ingroup pjama-group --home /nfs/home/"\$username" --gecos "\$username"
+echo "\$username:\$password" | chpasswd
 make -C /var/yp
+EOF
+
+cat > remove_user << EOF
+#!/bin/bash
+if [ "\$1" != "" ]; then
+	deluser --remove-home "\$1"
+	make -C /var/yp
+else
+	echo "No parameter given"
+fi
+EOF
+
+chmod 777 create_user
+chmod 777 remove_user
+
+# Add user johnny to database
+addgroup --gid 1110 pjama-group
+./create_user johnny
 
 apt-get install openssh-server build-essential mpich -y
+
 reboot
