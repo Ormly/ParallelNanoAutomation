@@ -688,7 +688,7 @@ addgroup --gid 1110 pjama-group
 useradd -m -p $(openssl passwd -crypt johnny) -s /bin/bash johnny -g pjama-group -d /nfs/home/johnny
 make -C /var/yp
 
-cat > createuser << EOF
+cat > create_user << EOF
 #!/bin/bash
 #Takes can take in 0..2 parameters
 #0 parameters - prompts for username and password
@@ -718,12 +718,22 @@ else
 	password="\$1"
 fi
 
-useradd -m -p \$(openssl passwd -crypt "\$password") -s /bin/bash "\$username" -g pjama-group -d /nfs/home/"\$username"
+useradd -m -p \$(openssl passwd -crypt "\$password") -s /bin/bash "\$username" -G pjama-group -d /nfs/home/"\$username"
 make -C /var/yp
 EOF
 
-chmod 777 createuser
+cat > remove_user << EOF
+#!/bin/bash
+if [ "\$1" != "" ]; then
+	deluser --remove-home "\$1"
+	make -C /var/yp
+else
+	echo "No parameter given"
+fi
+EOF
 
+chmod 777 create_user
+chmod 777 remove_user
 apt-get install openssh-server build-essential mpich -y
 
 reboot
