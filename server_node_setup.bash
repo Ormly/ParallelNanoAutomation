@@ -718,7 +718,7 @@ else
 	password="\$1"
 fi
 
-useradd -m -p \$(openssl passwd -crypt "\$password") -s /bin/bash "\$username" -G pjama-group -d /nfs/home/"\$username"
+useradd "\$username" -m -p \$(openssl passwd -crypt "\$password") -s /bin/bash -g pjama-group -d /nfs/home/"\$username"
 make -C /var/yp
 EOF
 

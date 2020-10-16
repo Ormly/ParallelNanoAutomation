@@ -7,13 +7,13 @@ username=
 password=
 
 #If no parameters are given
-if [ "\$1" == "" ]; then
+if [ "$1" == "" ]; then
 	echo -n "Enter a username: "
 	read username
-	echo -n "Enter a password: ["\$username"] "
+	echo -n "Enter a password: ["$username"] "
 	read password
-	if [ "\$password" == "" ]; then
-		password="\$username"
+	if [ "$password" == "" ]; then
+		password="$username"
 	fi
 
 #If username and password are given
@@ -27,5 +27,5 @@ else
 	password="$1"
 fi
 
-useradd -m -p $(openssl passwd -crypt "$password") -s /bin/bash "$username" -G pjama-group -d /nfs/home/"$username"
+useradd "$username" -m -p $(openssl passwd -crypt "$password") -s /bin/bash -g pjama-group -d /nfs/home/"$username"
 make -C /var/yp
