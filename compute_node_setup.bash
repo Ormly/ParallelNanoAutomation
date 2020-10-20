@@ -53,10 +53,12 @@ apt-get install nfs-common -y
 cat >> /etc/fstab << EOF
 # pjama related mounts
 bobby:/nfs/home /nfs/home nfs rw,soft,x-systemd.automount 0 0
+bobby:/nfs/scripts /nfs/scripts nfs rw,soft,x-systemd.automount 0 0
 EOF
-mkdir /nfs /nfs/home
+mkdir /nfs /nfs/home /nfs/scripts
+mount bobby:/nfs/scripts /nfs/scripts
 
-#Finishing up
+#Other
 apt-get install openssh-server build-essential mpich -y
 
 #MPI
@@ -70,6 +72,16 @@ cd openmpi-4.0.5/
 ./configure --prefix=/usr/local --enable-heterogeneous
 make all install
 ldconfig
+
+#Beacon agent
+cd /nfs/scripts/ParallelNano_Lisa_Beacon_Agent
+python3 setup.py install --user
+
+cat > startup << EOF
+python3 /nfs/scripts/ParallelNano_Lisa_Beacon_Agent/beacon/beacon.py
+EOF
+chmod 777 startup
+sudo ln -s startup /etc/profile.d/startup
 
 #Give a hint to Ansible this is done
 echo "Script is done"
