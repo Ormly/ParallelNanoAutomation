@@ -1,0 +1,12 @@
+# cache_valid_time is to update the apt cache if its older than the cache_valid_time. 
+# This option is set in seconds. 86400 is one day
+
+---
+- hosts: "{{target}}"
+  become: yes
+  tasks:
+  - name: update and upgrade apt packages
+    apt: 
+      upgrade: yes
+      update_cache: yes
+      cache_valid_time: 86400
