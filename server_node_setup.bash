@@ -83,7 +83,7 @@ EOF
 
 #NFS Server
 apt-get install nfs-server -y
-mkdir /nfs /nfs/home /opt/mpiCommon
+mkdir /nfs /nfs/home /nfs/scripts /opt/mpiCommon
 
 cat > /etc/exports << EOF
 # /etc/exports: the access control list for filesystems which may be exported
@@ -97,6 +97,7 @@ cat > /etc/exports << EOF
 # /srv/nfs4/homes  gss/krb5i(rw,sync,no_subtree_check)
 #
 /nfs/home *(rw,sync,no_root_squash,no_subtree_check)
+/nfs/scripts *(rw,sync,no_root_squash,no_subtree_check)
 /opt/mpiCommon *(rw,sync,no_root_squash,no_subtree_check)
 EOF
 
@@ -734,6 +735,91 @@ chmod 777 remove_user
 # Add user johnny to database
 addgroup --gid 1110 pjama-group
 ./create_user johnny
+./create_user lisa
+
+apt-get install git -y
+
+mkdir -p /root/.ssh
+
+#touch id_rsa
+cat > id_rsa << EOF
+-----BEGIN OPENSSH PRIVATE KEY-----
+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
+-----END OPENSSH PRIVATE KEY-----
+EOF
+
+chmod 000 id_rsa
+
+ssh-add id_rsa
+eval $(ssh-agent -s)
+
+#touch known_hosts
+cat > known_hosts << EOF
+|1|P7EV6eBuuhK88GGn/bZZsWeQAHs=|Bz18lfOREtpVRcWHMIVthMQKWWE= ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAq2A7hRGmdnm9tUDbO9IDSwBK6TbQa+PXYPCPy6rbTrTtw7PHkccKrpp0yVhp5HdEIcKr6pLlVDBfOLX9QUsyCOV0wzfjIJNlGEYsdlLJizHhbn2mUjvSAHQqZETYP81eFzLQNnPHt4EVVUh7VfDESU84KezmD5QlWpXLmvU31/yMf+Se8xhHTvKSCZIFImWwoG6mbUoWf9nzpIoaSjB+weqqUUmpaaasXVal72J+UX2B+2RPW3RcT0eOzQgqlJL3RKrTJvdsjE3JEAvGq3lGHSZXy28G3skua2SmVi/w4yCE6gbODqnTWlg7+wC604ydGXA8VJiS5ap43JXiUFFAaQ==
+|1|9fw8X2E2/Ic7bc63OGLf9ABuyOQ=|Tr/1Q7FzP+oLh4e2qLC2gD9yug0= ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAq2A7hRGmdnm9tUDbO9IDSwBK6TbQa+PXYPCPy6rbTrTtw7PHkccKrpp0yVhp5HdEIcKr6pLlVDBfOLX9QUsyCOV0wzfjIJNlGEYsdlLJizHhbn2mUjvSAHQqZETYP81eFzLQNnPHt4EVVUh7VfDESU84KezmD5QlWpXLmvU31/yMf+Se8xhHTvKSCZIFImWwoG6mbUoWf9nzpIoaSjB+weqqUUmpaaasXVal72J+UX2B+2RPW3RcT0eOzQgqlJL3RKrTJvdsjE3JEAvGq3lGHSZXy28G3skua2SmVi/w4yCE6gbODqnTWlg7+wC604ydGXA8VJiS5ap43JXiUFFAaQ==
+|1|y5U42fljybY+cedPxOndkAY5s0Q=|ZtdYfVuh7P9psIQJzaFGYS6fO4c= ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAq2A7hRGmdnm9tUDbO9IDSwBK6TbQa+PXYPCPy6rbTrTtw7PHkccKrpp0yVhp5HdEIcKr6pLlVDBfOLX9QUsyCOV0wzfjIJNlGEYsdlLJizHhbn2mUjvSAHQqZETYP81eFzLQNnPHt4EVVUh7VfDESU84KezmD5QlWpXLmvU31/yMf+Se8xhHTvKSCZIFImWwoG6mbUoWf9nzpIoaSjB+weqqUUmpaaasXVal72J+UX2B+2RPW3RcT0eOzQgqlJL3RKrTJvdsjE3JEAvGq3lGHSZXy28G3skua2SmVi/w4yCE6gbODqnTWlg7+wC604ydGXA8VJiS5ap43JXiUFFAaQ==
+EOF
+
+mkdir -p /root/.ssh
+cp id_rsa /root/.ssh/id_rsa
+cp known_hosts /root/.ssh/known_hosts
+rm id_rsa
+rm known_hosts
+
+cd /nfs/scripts
+chmod 777 *
+git clone git@github.com:Ormly/ParallelNano_Lisa_Beacon.git
+git clone git@github.com:Ormly/ParallelNano_Lisa_Beacon_Agent.git
+git clone git@github.com:Ormly/ParallelNano_Lisa_Lighthouse.git
+git clone git@github.com:Ormly/ParallelNanoAutomation.git
+git clone git@github.com:Ormly/ParallelNano_Lisa_Tempo.git
+cd ~
 
 apt-get install openssh-server build-essential mpich -y
 
