@@ -1,0 +1,23 @@
+---
+- hosts: "{{target}}"
+  become: yes
+  vars:
+    package_name: "{{package}}"
+
+  tasks:
+  - name: gather the package facts
+    package_facts:
+      manager: auto
+
+  - name: do not install when package exists
+    debug:
+      msg: "{{package}} is installed, quit the process"
+    when: "package_name in ansible_facts.packages"
+
+  - name: install the package when not exist
+    apt:
+      name: "{{package}}"
+      state: present
+    when: "package_name not in ansible_facts.packages"
+     
+    
