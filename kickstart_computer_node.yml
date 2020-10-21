@@ -6,9 +6,6 @@
   tasks:
     - name: execute the script
       script: ~/ansible_play/compute_node_setup.bash
-      register: output
-
-    - debug: var=output.stdout_lines
 
     - name: reboot
       reboot: 
