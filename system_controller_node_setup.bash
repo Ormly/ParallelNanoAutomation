@@ -5,9 +5,7 @@ until ping -c1 www.google.com >/dev/null 2>&1; do :; done
 apt update -y
 apt full-upgrade -y
 timedatectl set-timezone Europe/Berlin
-if [ "$1" != "" ]; then
-	hostnamectl set-hostname $1
-fi
+hostnamectl set-hostname lisa
 
 #NIS setup
 echo "nis nis/domain string pjama" > /tmp/nisinfo
@@ -58,30 +56,19 @@ EOF
 mkdir /nfs /nfs/home /nfs/scripts
 mount bobby:/nfs/scripts /nfs/scripts
 
-#Other
-apt-get install openssh-server build-essential mpich -y
+#Finishing up
+apt-get install openssh-server build-essential git python3-pip libffi-dev -y
 
-#MPI
-apt install gcc g++ git make -y
-cd /opt/
-wget https://download.open-mpi.org/release/open-mpi/v4.0/openmpi-4.0.5.tar.gz -O openmpi.tar.gz
-tar -xzvf openmpi.tar.gz
-rm openmpi.tar.gz
-chmod 777 open-mpi/
-cd openmpi-4.0.5/
-./configure --prefix=/usr/local --enable-heterogeneous
-make all install
-ldconfig
-
-#Beacon agent
-cd /nfs/scripts/ParallelNano_Lisa_Beacon_Agent
+cd /nfs/scripts/ParallelNano_Lisa_Beacon
 python3 setup.py install --user
 
+cd /nfs/scripts/ParallelNano_Lisa_Lighthouse
+python3 setup.py install --user
+cd ~
+
 cat > startup << EOF
-python3 /nfs/scripts/ParallelNano_Lisa_Beacon_Agent/beacon/beacon.py
+python3 /nfs/scripts/ParallelNano_Lisa_Beacon/beacon_server/beacon_server_daemon.py
+gunicorn -w 2 /nfs/scripts/ParallelNano_Lisa_Lighthouse/wsgi:app --daemon
 EOF
 chmod 777 startup
 sudo ln -s startup /etc/profile.d/startup
-
-#Give a hint to Ansible this is done
-echo "Script is done"
