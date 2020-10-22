@@ -832,13 +832,13 @@ mkdir -p /root/.ssh
 mv id_rsa /root/.ssh/id_rsa
 mv known_hosts /root/.ssh/known_hosts
 
-chmod 777 /nfs/scripts
 cd /nfs/scripts
 git clone git@github.com:Ormly/ParallelNano_Lisa_Beacon.git
 git clone git@github.com:Ormly/ParallelNano_Lisa_Beacon_Agent.git
 git clone git@github.com:Ormly/ParallelNano_Lisa_Lighthouse.git
 git clone git@github.com:Ormly/ParallelNanoAutomation.git
 git clone git@github.com:Ormly/ParallelNano_Lisa_Tempo.git
+chmod +x -R *
 cd ~
 
 apt-get install software-properties-common -y
