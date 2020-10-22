@@ -2,8 +2,10 @@
 #Please change to match network adapters
 external=ens33
 internal=ens34
+wcno=2
 
-#Set ip address
+#Set ip address, change
+nmcli c modify Wired\ connection\ $wcno ipv4.addresses 192.168.21.1/24 ipv4.dns "192.168.21.1,8.8.8.8" ipv4.method manual
 mv /etc/sysctl.conf /etc/sysctl.conf.original
 
 cat > /etc/sysctl.conf << EOF
@@ -91,7 +93,7 @@ local=/pjama/
 listen-address=127.0.0.1
 listen-address=192.168.21.1
 
-interface="\$internal"
+interface="Wired connection $wcno"
 
 #DHCP options
 dhcp-range=192.168.21.50,192.168.21.200,12h
