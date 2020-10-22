@@ -1,6 +1,7 @@
 #!/bin/bash
 apt full-upgrade -y
 apt-get install nfs-common gcc g++ git make mpich openssh-server build-essential -y
+timedatectl set-timezone Europe/Berlin
 
 #NIS setup
 echo "nis nis/domain string pjama" > /tmp/nisinfo
