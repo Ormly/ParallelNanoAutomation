@@ -1,18 +1,7 @@
 #!/bin/bash
 #Set ip address
-
-if [ "$1" == "" ] || [ "$2" == "" ] || [ "$3" == "" ] || [ "$4" == "" ]; then
-	echo "Please enter external_type external_interface internal_type internal_interface"
-	exit
-fi
-
-externaltype=$1
-externalif=$2
-internaltype=$3
-internalif=$4
-
-nmcli connection add con-name external type "$externaltype" ifname "$externalif" ipv4.method auto connection.autoconnect yes
-nmcli connection add con-name internal type "$internaltype" ifname "$internalif" ipv4.method manual ipv4.addr 192.168.21.1/24 ipv4.dns "192.168.21.1,8.8.8.8"
+nmcli c modify Wired\ connection\ 1 con-name External ipv4.method auto connection.autoconnect yes
+nmcli c modify Wired\ connection\ 2 con-name Internal ipv4.method manual ipv4.addr 192.168.21.1/24 ipv4.dns "192.168.21.1,8.8.8.8"
 
 mv /etc/sysctl.conf /etc/sysctl.conf.original
 
@@ -20,9 +9,9 @@ cat > /etc/sysctl.conf << EOF
 net.ipv4.ip_forward=1
 EOF
 
-iptables -t nat -A POSTROUTING -o "$externalif" -j MASQUERADE
-iptables -A FORWARD -i "$externalif" -o "$internalif" -m state --state RELATED,ESTABLISHED -j ACCEPT
-iptables -A FORWARD -i "$internalif" -o "$externalif" -j ACCEPT
+iptables -t nat -A POSTROUTING -o External -j MASQUERADE
+iptables -A FORWARD -i External -o Internal -m state --state RELATED,ESTABLISHED -j ACCEPT
+iptables -A FORWARD -i Internal -o External -j ACCEPT
 iptables-save > /etc/iptables.rules
 
 echo iptables-persistent iptables-persistent/autosave_v4 boolean true | debconf-set-selections
@@ -101,7 +90,7 @@ local=/pjama/
 listen-address=127.0.0.1
 listen-address=192.168.21.1
 
-interface="$internalif"
+interface=Internal
 
 #DHCP options
 dhcp-range=192.168.21.50,192.168.21.200,12h
