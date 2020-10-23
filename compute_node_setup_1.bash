@@ -1,7 +1,7 @@
 #!/bin/bash
 #!/bin/bash
 apt full-upgrade -y
-apt-get install nfs-common gcc g++ git make mpich openssh-server build-essential python3-pip -y
+apt-get install nfs-common gcc g++ git make mpich openssh-server build-essential python3-pip libffi-dev -y
 timedatectl set-timezone Europe/Berlin
 
 #NIS setup
