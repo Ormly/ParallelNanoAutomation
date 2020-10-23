@@ -1,6 +1,7 @@
 #!/bin/bash
+#!/bin/bash
 apt full-upgrade -y
-apt-get install nfs-common gcc g++ git make mpich openssh-server build-essential -y
+apt-get install nfs-common gcc g++ git make mpich openssh-server build-essential python3-pip -y
 timedatectl set-timezone Europe/Berlin
 
 #NIS setup
@@ -35,6 +36,7 @@ cat > /etc/rc.local << EOF
 # start nis related services
 systemctl restart rpcbind
 systemctl restart nis
+python3 /nfs/scripts/ParallelNano_Lisa_Beacon_Agent/beacon/beacon.py
 exit 0
 EOF
 
@@ -84,7 +86,7 @@ cat > /etc/fstab << EOF
 #
 # <file system> <mount point>   <type>  <options>       <dump>  <pass>
 # / was on /dev/sda1 during installation
-UUID=4518aadf-afc5-4d05-bb53-cf351d9ad522 /               ext4    errors=remount-ro 0       1
+UUID=$(blkid -s UUID -o value /dev/sda1) /               ext4    errors=remount-ro 0       1
 /swapfile                                 none            swap    sw              0       0
 # pjama related mounts
 bobby:/nfs/home /nfs/home nfs rw,soft,x-systemd.automount 0 0
