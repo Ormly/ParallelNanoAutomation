@@ -106,10 +106,3 @@ python3 setup.py install --user
 cd /nfs/scripts/ParallelNano_Lisa_Lighthouse
 python3 setup.py install --user
 cd ~
-
-cat > startup << EOF
-python3 /nfs/scripts/ParallelNano_Lisa_Beacon/beacon_server/beacon_server_daemon.py
-gunicorn -w 2 /nfs/scripts/ParallelNano_Lisa_Lighthouse/wsgi:app --daemon
-EOF
-chmod 777 startup
-sudo ln -s startup /etc/profile.d/startup

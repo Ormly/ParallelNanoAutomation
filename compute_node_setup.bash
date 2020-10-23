@@ -98,12 +98,6 @@ mount bobby:/nfs/scripts /nfs/scripts
 cd /nfs/scripts/ParallelNano_Lisa_Beacon_Agent
 python3 setup.py install --user
 
-cat > startup << EOF
-python3 /nfs/scripts/ParallelNano_Lisa_Beacon_Agent/beacon/beacon.py
-EOF
-chmod 777 startup
-sudo ln -s startup /etc/profile.d/startup
-
 #MPI
 apt install gcc g++ git make mpich -y
 cd /opt/
