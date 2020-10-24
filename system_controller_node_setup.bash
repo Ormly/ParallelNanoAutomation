@@ -102,3 +102,5 @@ python3 setup.py install --user
 
 cd /nfs/scripts/ParallelNano_Lisa_Lighthouse
 python3 setup.py install --user
+
+reboot
