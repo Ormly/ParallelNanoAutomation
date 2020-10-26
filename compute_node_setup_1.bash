@@ -1,5 +1,4 @@
 #!/bin/bash
-#Updates, timezone and hostname
 apt full-upgrade -y
 apt-get install nfs-common gcc g++ git make mpich openssh-server build-essential python3-pip libffi-dev -y
 timedatectl set-timezone Europe/Berlin
@@ -46,11 +45,10 @@ cat > /etc/rc.local << EOF
 # bits.
 #
 # By default this script does nothing.# start nis related services
+# start nis related services
 systemctl restart rpcbind
 systemctl restart nis
-python3 /nfs/scripts/ParallelNano_Lisa_Beacon/beacon_server/beacon_server_daemon.py
-cd /nfs/scripts/ParallelNano_Lisa_Lighthouse/
-gunicorn -w 2 wsgi:app --daemon
+python3 /nfs/scripts/ParallelNano_Lisa_Beacon_Agent/beacon/beacon.py
 exit 0
 EOF
 
@@ -110,10 +108,8 @@ EOF
 mkdir /nfs /nfs/home /nfs/scripts
 mount bobby:/nfs/scripts /nfs/scripts
 
-cd /nfs/scripts/ParallelNano_Lisa_Beacon
+#Beacon agent
+cd /nfs/scripts/ParallelNano_Lisa_Beacon_Agent
 python3 setup.py install
 
-cd /nfs/scripts/ParallelNano_Lisa_Lighthouse
-python3 setup.py install
-
-reboot
+echo "Part 1 completed"

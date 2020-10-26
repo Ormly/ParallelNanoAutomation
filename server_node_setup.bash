@@ -1,13 +1,33 @@
 #!/bin/bash
-#Set ip address
-nmcli connection modify "Wired connection 1" ipv4.method manual ipv4.addr 192.168.21.1/24 ipv4.dns "192.168.21.1,8.8.8.8" ipv4.gateway 192.168.21.254
+#Please change to match network adapters
+external=ens33
+internal=ens34
+wcno=2
+
+#Set ip address, change
+nmcli c modify Wired\ connection\ $wcno ipv4.addresses 192.168.21.1/24 ipv4.dns "192.168.21.1,8.8.8.8" ipv4.method manual
+mv /etc/sysctl.conf /etc/sysctl.conf.original
+
+cat > /etc/sysctl.conf << EOF
+net.ipv4.ip_forward=1
+EOF
+
+iptables -t nat -A POSTROUTING -o "$external" -j MASQUERADE
+iptables -A FORWARD -i "$external" -o "$internal" -m state --state RELATED,ESTABLISHED -j ACCEPT
+iptables -A FORWARD -i "$internal" -o "$external" -j ACCEPT
+iptables-save > /etc/iptables.rules
+
+echo iptables-persistent iptables-persistent/autosave_v4 boolean true | debconf-set-selections
+echo iptables-persistent iptables-persistent/autosave_v6 boolean true | debconf-set-selections
+sudo apt-get -y install iptables-persistent
+echo PURGE | debconf-communicate packagename
+
 until ping -c1 www.google.com >/dev/null 2>&1; do :; done
 
 #Updates, timezone and hostname
 apt update -y
 apt full-upgrade -y
 timedatectl set-timezone Europe/Berlin
-hostnamectl set-hostname bobby
 
 #DHCP & DNS
 apt-get install dnsmasq -y
@@ -73,10 +93,11 @@ local=/pjama/
 listen-address=127.0.0.1
 listen-address=192.168.21.1
 
+interface="Wired connection $wcno"
+
 #DHCP options
 dhcp-range=192.168.21.50,192.168.21.200,12h
 dhcp-lease-max=150
-dhcp-option=option:router,192.168.21.254
 dhcp-option=option:dns-server,192.168.21.1
 dhcp-option=option:netmask,255.255.255.0
 EOF
@@ -109,6 +130,7 @@ echo "nis nis/domain string pjama" > /tmp/nisinfo
 debconf-set-selections /tmp/nisinfo
 apt-get install portmap nis -y
 rm /tmp/nisinfo
+echo PURGE | debconf-communicate packagename
 
 cat > /etc/default/nis << EOF
 #
@@ -807,20 +829,20 @@ cat > known_hosts << EOF
 EOF
 
 mkdir -p /root/.ssh
-cp id_rsa /root/.ssh/id_rsa
-cp known_hosts /root/.ssh/known_hosts
-rm id_rsa
-rm known_hosts
+mv id_rsa /root/.ssh/id_rsa
+mv known_hosts /root/.ssh/known_hosts
 
 cd /nfs/scripts
-chmod 777 *
 git clone git@github.com:Ormly/ParallelNano_Lisa_Beacon.git
 git clone git@github.com:Ormly/ParallelNano_Lisa_Beacon_Agent.git
 git clone git@github.com:Ormly/ParallelNano_Lisa_Lighthouse.git
 git clone git@github.com:Ormly/ParallelNanoAutomation.git
 git clone git@github.com:Ormly/ParallelNano_Lisa_Tempo.git
+chmod +x -R *
 cd ~
 
-apt-get install openssh-server build-essential mpich -y
+apt-get install software-properties-common -y
+apt-add-repository ppa:ansible/ansible -y
+apt-get install openssh-server build-essential mpich ansible -y
 
 reboot
