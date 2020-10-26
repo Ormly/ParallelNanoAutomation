@@ -32,7 +32,20 @@ rpc:            db files
 netgroup:       nis
 EOF
 
+chmod +x /etc/rc.local
 cat > /etc/rc.local << EOF
+#!/bin/sh -e
+#
+# rc.local
+#
+# This script is executed at the end of each multiuser runlevel.
+# Make sure that the script will "exit 0" on success or any other
+# value on error.
+#
+# In order to enable or disable this script just change the execution
+# bits.
+#
+# By default this script does nothing.# start nis related services
 # start nis related services
 systemctl restart rpcbind
 systemctl restart nis
@@ -98,6 +111,6 @@ mount bobby:/nfs/scripts /nfs/scripts
 
 #Beacon agent
 cd /nfs/scripts/ParallelNano_Lisa_Beacon_Agent
-python3 setup.py install --user
+python3 setup.py install
 
 echo "Part 1 completed"
