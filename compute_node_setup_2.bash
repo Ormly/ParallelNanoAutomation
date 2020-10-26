@@ -12,4 +12,4 @@ make all install
 ldconfig
 
 #Give a hint to Ansible this is done
-echo "Part 1 completed"
+echo "Part 2 completed"
