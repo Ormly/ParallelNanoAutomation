@@ -1,0 +1,29 @@
+---
+- name: set up computer nodes
+  hosts: "{{target}}"
+  become: yes
+  gather_facts: no
+
+  tasks:
+    - name: execute script 1
+      script: ../compute_node_setup_1.bash
+      register: output1
+
+    - debug: var=output1.stdout_lines
+
+    - name: execute script 2
+      script: ../compute_node_setup_2.bash
+      register: output2
+
+    - debug: var=output2.stdout_lines
+
+    - name: reboot (set timeout in case lots of updates to apply)
+      reboot:
+        reboot_timeout: 3600
+
+    - name: check the uptime after reboot
+      shell: uptime
+      register: uptime_post_reboot
+
+    - debug: msg={{ uptime_post_reboot.stdout }}
+    
