@@ -1,11 +1,8 @@
 #!/bin/bash
 #Updates, timezone and hostname
-echo "Waiting for network..."
-until ping -c1 www.google.com >/dev/null 2>&1; do :; done
-apt update -y
 apt full-upgrade -y
+apt-get install nfs-common gcc g++ git make mpich openssh-server build-essential python3-pip libffi-dev -y
 timedatectl set-timezone Europe/Berlin
-hostnamectl set-hostname lisa
 
 #NIS setup
 echo "nis nis/domain string pjama" > /tmp/nisinfo
@@ -16,8 +13,8 @@ rm /tmp/nisinfo
 cat > /etc/nsswitch.conf << EOF
 #
 # Example configuration of GNU Name Service Switch functionality.
-# If you have the \`glibc-doc-reference' and \`info' packages installed, try:
-# \`info libc "Name Service Switch"' for information about this file.
+# If you have the \\\`glibc-doc-reference' and \\\`info' packages installed, try:
+# \\\`info libc "Name Service Switch"' for information about this file.
 
 passwd:         compat nis
 group:          compat nis
@@ -35,10 +32,26 @@ rpc:            db files
 netgroup:       nis
 EOF
 
+chmod +x /etc/rc.local
 cat > /etc/rc.local << EOF
-# start nis related services
+#!/bin/sh -e
+#
+# rc.local
+#
+# This script is executed at the end of each multiuser runlevel.
+# Make sure that the script will "exit 0" on success or any other
+# value on error.
+#
+# In order to enable or disable this script just change the execution
+# bits.
+#
+# By default this script does nothing.# start nis related services
 systemctl restart rpcbind
 systemctl restart nis
+python3 /nfs/scripts/ParallelNano_Lisa_Beacon/beacon_server/beacon_server_daemon.py
+python3 /nfs/scripts/ParallelNano_Lisa_Tempo/tempo/tempo.py
+cd /nfs/scripts/ParallelNano_Lisa_Lighthouse/
+gunicorn -w 2 wsgi:app --daemon
 exit 0
 EOF
 
@@ -88,28 +101,23 @@ cat > /etc/fstab << EOF
 #
 # <file system> <mount point>   <type>  <options>       <dump>  <pass>
 # / was on /dev/sda1 during installation
-UUID=4518aadf-afc5-4d05-bb53-cf351d9ad522 /               ext4    errors=remount-ro 0       1
+UUID=$(blkid -s UUID -o value /dev/sda1) /               ext4    errors=remount-ro 0       1
 /swapfile                                 none            swap    sw              0       0
 # pjama related mounts
 bobby:/nfs/home /nfs/home nfs rw,soft,x-systemd.automount 0 0
 bobby:/nfs/scripts /nfs/scripts nfs rw,soft,x-systemd.automount 0 0
 EOF
+
 mkdir /nfs /nfs/home /nfs/scripts
 mount bobby:/nfs/scripts /nfs/scripts
 
-#Finishing up
-apt-get install openssh-server build-essential git python3-pip libffi-dev -y
-
 cd /nfs/scripts/ParallelNano_Lisa_Beacon
-python3 setup.py install --user
+python3 setup.py install
 
 cd /nfs/scripts/ParallelNano_Lisa_Lighthouse
-python3 setup.py install --user
-cd ~
+python3 setup.py install
 
-cat > startup << EOF
-python3 /nfs/scripts/ParallelNano_Lisa_Beacon/beacon_server/beacon_server_daemon.py
-gunicorn -w 2 /nfs/scripts/ParallelNano_Lisa_Lighthouse/wsgi:app --daemon
-EOF
-chmod 777 startup
-sudo ln -s startup /etc/profile.d/startup
+cd /nfs/scripts/ParallelNano_Lisa_Tempo
+python3 setup.py install
+
+reboot
