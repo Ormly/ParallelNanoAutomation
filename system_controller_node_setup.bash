@@ -49,6 +49,7 @@ cat > /etc/rc.local << EOF
 systemctl restart rpcbind
 systemctl restart nis
 python3 /nfs/scripts/ParallelNano_Lisa_Beacon/beacon_server/beacon_server_daemon.py
+python3 /nfs/scripts/ParallelNano_Lisa_Tempo/tempo/tempo.py
 cd /nfs/scripts/ParallelNano_Lisa_Lighthouse/
 gunicorn -w 2 wsgi:app --daemon
 exit 0
@@ -114,6 +115,9 @@ cd /nfs/scripts/ParallelNano_Lisa_Beacon
 python3 setup.py install
 
 cd /nfs/scripts/ParallelNano_Lisa_Lighthouse
+python3 setup.py install
+
+cd /nfs/scripts/ParallelNano_Lisa_Tempo
 python3 setup.py install
 
 reboot
