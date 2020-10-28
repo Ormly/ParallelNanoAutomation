@@ -36,10 +36,10 @@ strategy = free
 host_key_checking = False
 inventory = ./inventory.ini
 ```
-```timeout = 30```, error occur sometime because of timeout in privilege escalation promt. Extend the timeout to solve this problem
-```strategy = free```, to prevent that Ansible do not go to the next tasks until all hosts finished the current tasks. 
-```host_key_checking = False```, to prevent the SSH authenticity check block the progress
-```inventory = ./inventory.ini```, to indicate the customize inventory. Otherwise, we would need to indicate in command
+```timeout = 30```, error occur sometime because of timeout in privilege escalation promt. Extend the timeout to solve this problem  
+```strategy = free```, to prevent that Ansible do not go to the next tasks until all hosts finished the current tasks   
+```host_key_checking = False```, to prevent the SSH authenticity check block the progress  
+```inventory = ./inventory.ini```, to indicate the customize inventory. Otherwise, we would need to indicate in command  
 ## Bash script and Ansible
 One of the advantage of Ansible for us is that Ansible can easily reach to hosts.
 Since the team has expert of Bash script and is new to Ansible, we decide to combine both solution in our automation. 
