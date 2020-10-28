@@ -7,9 +7,6 @@
   tasks:
     - name: execute script 1
       script: ../compute_node_setup_1.bash
-      register: output1
-
-   # - debug: var=output1.stdout_lines
 
     - name: execute script 2
       script: ../compute_node_setup_2.bash
