@@ -1,0 +1,21 @@
+---
+- name: set up system controller node
+  hosts: "{{target}}"
+  become: yes
+  gather_facts: no
+
+  tasks:
+    - name: execute installation script
+      script: ../system_controller_node_setup.bash
+    
+  handlers:
+    - name: Reboot host
+      reboot:
+        reboot_timeout: 3600
+       
+    - name: check the uptime after reboot
+      shell: uptime
+      register: uptime_post_reboot
+      
+    - name: print uptime
+      debug: msg={{ uptime_post_reboot.stdout }}

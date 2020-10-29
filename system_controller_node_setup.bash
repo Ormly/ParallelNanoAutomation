@@ -120,4 +120,4 @@ python3 setup.py install
 cd /nfs/scripts/ParallelNano_Lisa_Tempo
 python3 setup.py install
 
-reboot
+#reboot
