@@ -7,6 +7,10 @@
   tasks:
     - name: execute installation script
       script: ../system_controller_node_setup.bash
+      notify: 
+        - Reboot host
+        - check the uptime after reboot 
+        - print uptime
     
   handlers:
     - name: Reboot host
