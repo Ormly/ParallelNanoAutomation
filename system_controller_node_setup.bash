@@ -1,8 +1,9 @@
 #!/bin/bash
 #Updates, timezone and hostname
 apt full-upgrade -y
-apt-get install nfs-common gcc g++ git make mpich openssh-server build-essential python3-pip libffi-dev -y
+apt-get install nfs-common gcc g++ git make mpich openssh-server build-essential python3-pip libffi-dev RPi.GPIO -y
 timedatectl set-timezone Europe/Berlin
+hostnamectl set-hostname lisa
 
 #NIS setup
 echo "nis nis/domain string pjama" > /tmp/nisinfo
@@ -51,7 +52,7 @@ systemctl restart nis
 python3 /nfs/scripts/ParallelNano_Lisa_Beacon/beacon_server/beacon_server_daemon.py
 python3 /nfs/scripts/ParallelNano_Lisa_Tempo/tempo/tempo.py
 cd /nfs/scripts/ParallelNano_Lisa_Lighthouse/
-gunicorn -w 2 wsgi:app --daemon
+gunicorn -w 8 wsgi:app --daemon
 exit 0
 EOF
 
@@ -119,5 +120,3 @@ python3 setup.py install
 
 cd /nfs/scripts/ParallelNano_Lisa_Tempo
 python3 setup.py install
-
-reboot

@@ -7,7 +7,7 @@ tar -xzvf openmpi.tar.gz
 rm openmpi.tar.gz
 chmod +x -R openmpi-4.0.5/
 cd openmpi-4.0.5/
-./configure --prefix=/usr/local --enable-heterogeneous
+./configure --prefix=/usr/local --with-cuda
 make all install
 ldconfig
 
