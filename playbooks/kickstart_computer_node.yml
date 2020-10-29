@@ -1,0 +1,28 @@
+---
+- name: set up computer nodes
+  hosts: "{{target}}"
+  become: yes
+  gather_facts: no
+
+  tasks:
+    - name: execute script 1
+      script: ../compute_node_setup_1.bash
+
+    - name: execute script 2
+      script: ../compute_node_setup_2.bash
+      notify: 
+        - Reboot host
+        - check the uptime after reboot 
+        - print uptime
+    
+  handlers:
+    - name: Reboot host
+      reboot:
+        reboot_timeout: 3600
+       
+    - name: check the uptime after reboot
+      shell: uptime
+      register: uptime_post_reboot
+      
+    - name: print uptime
+      debug: msg={{ uptime_post_reboot.stdout }}
