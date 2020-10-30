@@ -6,7 +6,6 @@ wcno=2
 
 #Set ip address, change
 nmcli c modify Wired\ connection\ $wcno ipv4.addresses 192.168.21.1/24 ipv4.dns "192.168.21.1,8.8.8.8" ipv4.method manual
-mv /etc/sysctl.conf /etc/sysctl.conf.original
 
 cat > /etc/sysctl.conf << EOF
 net.ipv4.ip_forward=1
@@ -104,7 +103,7 @@ EOF
 
 #NFS Server
 apt-get install nfs-server -y
-mkdir /nfs /nfs/home /nfs/scripts /opt/mpiCommon
+mkdir /nfs /nfs/home /nfs/scripts /opt/ /opt/mpiCommon
 
 cat > /etc/exports << EOF
 # /etc/exports: the access control list for filesystems which may be exported
@@ -751,8 +750,8 @@ else
 fi
 EOF
 
-chmod 777 create_user
-chmod 777 remove_user
+chmod +x create_user
+chmod +x remove_user
 
 # Add user johnny to database
 addgroup --gid 1110 pjama-group
@@ -838,6 +837,7 @@ git clone git@github.com:Ormly/ParallelNano_Lisa_Beacon_Agent.git
 git clone git@github.com:Ormly/ParallelNano_Lisa_Lighthouse.git
 git clone git@github.com:Ormly/ParallelNanoAutomation.git
 git clone git@github.com:Ormly/ParallelNano_Lisa_Tempo.git
+git clone git@github.com:Ormly/ParallelNanoShowcase.git
 chmod +x -R *
 cd ~
 
