@@ -705,6 +705,41 @@ EOF
 
 systemctl restart nis
 
+cat > create_admin << EOF
+#!/bin/bash
+#Takes can take in 0..2 parameters
+#0 parameters - prompts for username and password
+#1 parameter - user is created with username and password as parameter
+#2 parameters - user is created with username as first parameter and password as second parameter
+username=
+password=
+
+#If no parameters are given
+if [ "\$1" == "" ]; then
+	echo -n "Enter a username: "
+	read username
+	echo -n "Enter a password: ["\$username"] "
+	read password
+	if [ "\$password" == "" ]; then
+		password="\$username"
+	fi
+
+#If username and password are given
+elif [ "\$1" != "" ] && [ "\$2" != "" ]; then
+	username="\$1"
+	password="\$2"
+
+#If username is given
+else
+	username="\$1"
+	password="\$1"
+fi
+
+adduser "\$username" --quiet --disabled-password --ingroup pjama-admin --home /nfs/home/"\$username" --gecos "\$username"
+echo "\$username:\$password" | chpasswd
+make -C /var/yp
+EOF
+
 cat > create_user << EOF
 #!/bin/bash
 #Takes can take in 0..2 parameters
@@ -735,7 +770,7 @@ else
 	password="\$1"
 fi
 
-adduser "\$username" --quiet --disabled-password --ingroup pjama-group --home /nfs/home/"\$username" --gecos "\$username"
+adduser "\$username" --quiet --disabled-password --ingroup pjama-user --home /nfs/home/"\$username" --gecos "\$username"
 echo "\$username:\$password" | chpasswd
 make -C /var/yp
 EOF
@@ -750,13 +785,49 @@ else
 fi
 EOF
 
+chmod +x create_admin
 chmod +x create_user
 chmod +x remove_user
 
 # Add user johnny to database
-addgroup --gid 1110 pjama-group
-./create_user johnny
-./create_user lisa
+addgroup --gid 1110 pjama-admin
+addgroup --gid 1111 pjama-user
+./create_user pjamauser
+./create_user pjamaadmin
+
+cat > /etc/sudoers << EOF
+#
+# This file MUST be edited with the 'visudo' command as root.
+#
+# Please consider adding local content in /etc/sudoers.d/ instead of
+# directly modifying this file.
+#
+# See the man page for details on how to write a sudoers file.
+#
+Defaults	env_reset
+Defaults	mail_badpass
+Defaults	secure_path="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin"
+
+# Host alias specification
+
+# User alias specification
+
+# Cmnd alias specification
+
+# User privilege specification
+root	ALL=(ALL:ALL) ALL
+pjamaadmin ALL=(ALL) ALL
+
+# Members of the admin group may gain root privileges
+%admin ALL=(ALL) ALL
+
+# Allow members of group sudo to execute any command
+%sudo	ALL=(ALL:ALL) ALL
+
+# See sudoers(5) for more information on "#include" directives:
+
+#includedir /etc/sudoers.d
+EOF
 
 apt-get install git -y
 
