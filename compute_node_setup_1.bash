@@ -48,7 +48,7 @@ cat > /etc/rc.local << EOF
 # start nis related services
 systemctl restart rpcbind
 systemctl restart nis
-python3 /nfs/scripts/ParallelNano_Lisa_Beacon_Agent/beacon/beacon.py
+python3 /nfs/scripts/beacon_agent/beacon/beacon.py
 exit 0
 EOF
 
@@ -143,7 +143,8 @@ mkdir /nfs /nfs/home /nfs/scripts
 mount bobby:/nfs/scripts /nfs/scripts
 
 #Beacon agent
-cd /nfs/scripts/ParallelNano_Lisa_Beacon_Agent
+cd /nfs/scripts/beacon_agent
 python3 setup.py install
 
-echo "Part 1 completed"
+#Give a hint to Ansible this is done
+echo "Script is done"
