@@ -8,7 +8,7 @@ NC='\033[0m'
 echo "Starting Ansible automation testing"
 
 #Check if ansile is installed
-$ansible_status=$(dpkg -s ansible) >/dev/null
+ansible_status=$(dpkg -s ansible)>/dev/null
 if [[ $ansible_status == *"Status: install ok installed"* ]]; then
 	echo -e "$GREEN Ansible installed $NC"
 else
@@ -23,7 +23,7 @@ echo "Please enter the name of the package you'd like to test, make sure it isn'
 echo "Note that during the automation testing it will be removed again."
 read package_name
 
-$package_status=$(dpkg -s $package_name) >/dev/null
+package_status=$(dpkg -s $package_name) >/dev/null
 
 #if package is already installed abort the test
 if [[ $package_status == *"Status: install ok installed"* ]]; then
@@ -34,7 +34,7 @@ else
 	#Run playbook
 	ansible-playbook /nfs/scripts/automation/testing_playbook/install_apt_package.yml -i "/nfs/scripts/automation/inventory.ini" -e "target=master package=$package_name"
 	#Check the package if installed
-	$package_status=$(dpkg -s $package_name) >/dev/null
+	package_status=$(dpkg -s $package_name) >/dev/null
 	if [[ $package_status == *"Status: install ok installed"* ]]; then
 		echo -e "$GREEN $package_name is now installed $NC"
 	else
