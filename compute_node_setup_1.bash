@@ -101,7 +101,8 @@ cat > /etc/fstab << EOF
 UUID=$(blkid -s UUID -o value /dev/sda1) /               ext4    errors=remount-ro 0       1
 /swapfile                                 none            swap    sw              0       0
 # pjama related mounts
-bobby:/nfs/home /nfs/home nfs rw,soft,x-systemd.automount 0 0
+bobby:/nfs/ /nfs/ nfs rw,soft,x-systemd.automount 0 0
+bobby:/opt/mpiCommon /opt/mpiCommon nfs rw,soft,x-systemd.automount 0 0
 EOF
 
 cat > /etc/sudoers << EOF
@@ -138,8 +139,8 @@ pjamaadmin ALL=(ALL) ALL
 #includedir /etc/sudoers.d
 EOF
 
-mkdir /nfs /nfs/home
-mount bobby:/nfs/home /nfs/home
+mkdir /nfs
+mount bobby:/nfs/ /nfs/
 
 #Beacon agent
 cd /nfs/home/user01/beacon_agent

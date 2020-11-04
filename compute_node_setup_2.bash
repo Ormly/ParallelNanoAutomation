@@ -10,6 +10,8 @@ cd openmpi-4.0.5/
 ./configure --prefix=/usr/local --with-cuda
 make all install
 ldconfig
+export PATH="/usr/local/cuda/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin"
+export LD_LIBRARY_PATH="/usr/local/cuda/lib64"
 
 #Give a hint to Ansible this is done
-echo "Part 2 completed"
+echo "Script is done"
