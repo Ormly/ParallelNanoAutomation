@@ -49,9 +49,9 @@ cat > /etc/rc.local << EOF
 # By default this script does nothing.# start nis related services
 systemctl restart rpcbind
 systemctl restart nis
-python3 /nfs/scripts/ParallelNano_Lisa_Beacon/beacon_server/beacon_server_daemon.py
-python3 /nfs/scripts/ParallelNano_Lisa_Tempo/tempo/tempo.py
-cd /nfs/scripts/ParallelNano_Lisa_Lighthouse/
+python3 /nfs/scripts/beacon/beacon_server/beacon_server_daemon.py
+python3 /nfs/scripts/tempo/tempo/tempo.py
+cd /nfs/scripts/lighthouse/
 gunicorn -w 8 wsgi:app --daemon
 exit 0
 EOF
@@ -146,11 +146,11 @@ EOF
 mkdir /nfs /nfs/home /nfs/scripts
 mount bobby:/nfs/scripts /nfs/scripts
 
-cd /nfs/scripts/ParallelNano_Lisa_Beacon
+cd /nfs/scripts/beacon
 python3 setup.py install
 
-cd /nfs/scripts/ParallelNano_Lisa_Lighthouse
+cd /nfs/scripts/lighthouse
 python3 setup.py install
 
-cd /nfs/scripts/ParallelNano_Lisa_Tempo
+cd /nfs/scripts/tempo
 python3 setup.py install
