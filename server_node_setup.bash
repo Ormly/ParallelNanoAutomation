@@ -4,7 +4,7 @@ external=ens33
 internal=ens34
 wcno=2
 adminAccount=pjamaadmin
-userAccount=user
+userAccount=user01
 
 #Set ip address, change
 nmcli c modify Wired\ connection\ $wcno ipv4.addresses 192.168.21.1/24 ipv4.dns "192.168.21.1,8.8.8.8" ipv4.method manual
@@ -105,7 +105,7 @@ EOF
 
 #NFS Server
 apt-get install nfs-server -y
-mkdir /nfs /nfs/home /nfs/scripts /opt/ /opt/mpiCommon
+mkdir /nfs /nfs/home /opt/mpiCommon
 
 cat > /etc/exports << EOF
 # /etc/exports: the access control list for filesystems which may be exported
@@ -118,8 +118,7 @@ cat > /etc/exports << EOF
 # /srv/nfs4        gss/krb5i(rw,sync,fsid=0,crossmnt,no_subtree_check)
 # /srv/nfs4/homes  gss/krb5i(rw,sync,no_subtree_check)
 #
-/nfs/home *(rw,sync,no_root_squash,no_subtree_check)
-/nfs/scripts *(rw,sync,no_root_squash,no_subtree_check)
+/nfs/ *(rw,sync,no_root_squash,no_subtree_check)
 /opt/mpiCommon *(rw,sync,no_root_squash,no_subtree_check)
 EOF
 
@@ -747,55 +746,33 @@ mkdir -p /root/.ssh
 
 #touch id_rsa
 cat > id_rsa << EOF
------BEGIN OPENSSH PRIVATE KEY-----
-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
------END OPENSSH PRIVATE KEY-----
+-----BEGIN RSA PRIVATE KEY-----
+MIIEogIBAAKCAQEA53b/ZlMXnHYd/6RjrGVCE3r6zbTw5dra/6FLJAiJNByuTlQf
+Gy+8k1nj0TgKYCPa+F8/GFFdP6EnTxNNpybe4PCfFyskOsXmwVIoiEuNOPlXYgjF
+e87sUEsgKrpyPtUSxxJY4PHkzYQJ0huYUA/XvIcyMV8Od85Pzph7M+psSuWDrIG+
+eNLRKrP61u4uXP9CfBpBN3yaG3cIAeXMth3MAd3ri2PXcL6fsb/XAj8Ctmb+zyvG
+zo4wfscUmzTTf1/ChCycIK7KThyxWCeuORthcZAMQl60Eqoda9X7457FKG7MFLKs
+t1I9gzLmtxLo3sHEuV/KCLh8qmf8x323Hpg2EQIDAQABAoIBACm0JxAoqHhoT79f
+vxWwqNcZsVae40iGxi6IwSEc6JubD0zNm00qrK9f4swvbK8lxq45ewTGpCZywsJc
+mAEl38JnmEJ0Y3KzdYAfbW4hLrC1PClNq0dDYRCWeJU6QptPiLKVe64L502gHKTe
+k/LY5+Xv9fsvRUwQwBBZKNmRwzE7EWY0huriOuqGNDVm3UBcY4DuAckEAmwT2DLd
+iBWzlXosO3z+qCbxL2R/62Syr448e6MhUcP7l1VBKEdQdm1CEPPNGxU4f02M7TXV
+qk/hjhrkqmsYa5qD3f9WVm5+hoQzSBHB+3nl0rGESVoZSxcjPsFFAuaGvUKbkr2U
+cjOcPIECgYEA9NE9ROat4L+djdHs0CX+gxjD54/7g1sapu8Rh/oxvZkPmirGGTZ1
+G9mSPSjlp02pTbWfz1toTs7C06RTDUTGos3hkoqn+tG11csPg9rTsGPknC5u0P1f
+710pRcBbIwAGzbOLnEjYBSxy/z1+6bhiSvkUWvopD7r0WLcE9sqDN48CgYEA8gmf
+Euf5GyfElr2nd7pDQ/SmExWwBF1c+vHAQjxc5d9nK7bFLRvn50bZT4QOr1W/jx0U
+4SJhpaiMSRsdfL0wZ2PG5idLDGgEdNBT04b0e7XZHHvwyE87FFGHeEmpKWIfk24d
+wiANuC4DT5MwrO3d9dZp3oDSo4pRLvdXG7sj6F8CgYAHOX2DYQNUlJMDsmQ4qEZg
+fASb+sXDVJbuwjNUPe/l1nR9ajG6YL8H+V21bFWKoGIUpv12Uw469SMOt9SzmYn7
+F/RGLM1UO4gQLRPiIj0JAYmnij8+75s7Jxamtkx6Ne/9dgTysbueO3eRTLFIGGbe
+K4eMP8GiczPuwkflOIiyxQKBgCEERvrhQg3+Qsb9YBbpBbwDZ5Q65SPzSHfC+qMO
+cO26p+xCpmsc32mhNIuwTACHBfaT1QFRG1jpwRlH5aHafPvdlIhY29f5aII22PiF
+9Fvb1p4YGiR5CmofJQe3pKfMhtopr02H6dcyD6mPPpiYaira8N41XIaKm8B4ZR2X
+TbKpAoGAE0ASSn5JFFJkVI9b5zCcZE667i2NA88hTnoVdCt+AOWFIouelS5fXRyB
+q6TsCgE5lZ3l6gHI6yMYevtRgbKFWpDnWGAdSw5IjjB3NsNNEYauqwFuYOHtGANc
+4MZCcN8MrbRQjfnGwCcAz0XBo7zvVsFrzZ927VySHB2VrwdtEbQ=
+-----END RSA PRIVATE KEY-----
 EOF
 
 chmod 600 id_rsa

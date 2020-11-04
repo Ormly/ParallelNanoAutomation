@@ -1,7 +1,9 @@
 #!/bin/bash
 #Updates, timezone and hostname
 apt full-upgrade -y
-apt-get install nfs-common gcc g++ git make mpich openssh-server build-essential python3-pip libffi-dev RPi.GPIO -y
+apt update
+apt install nfs-common gcc g++ git make mpich openssh-server build-essential libffi-dev -y
+apt install RPi.GPIO -y
 timedatectl set-timezone Europe/Berlin
 hostnamectl set-hostname lisa
 
@@ -49,9 +51,9 @@ cat > /etc/rc.local << EOF
 # By default this script does nothing.# start nis related services
 systemctl restart rpcbind
 systemctl restart nis
-python3 /nfs/scripts/beacon/beacon_server/beacon_server_daemon.py
-python3 /nfs/scripts/tempo/tempo/tempo.py
-cd /nfs/scripts/lighthouse/
+python3 /nfs/home/user01/beacon/beacon_server/beacon_server_daemon.py
+python3 /nfs/home/user01/tempo/tempo/tempo.py
+cd /nfs/home/user01/lighthouse/
 gunicorn -w 8 wsgi:app --daemon
 exit 0
 EOF
@@ -105,8 +107,7 @@ cat > /etc/fstab << EOF
 UUID=$(blkid -s UUID -o value /dev/sda1) /               ext4    errors=remount-ro 0       1
 /swapfile                                 none            swap    sw              0       0
 # pjama related mounts
-bobby:/nfs/home /nfs/home nfs rw,soft,x-systemd.automount 0 0
-bobby:/nfs/scripts /nfs/scripts nfs rw,soft,x-systemd.automount 0 0
+bobby:/nfs/ /nfs/ nfs rw,soft,x-systemd.automount 0 0
 EOF
 
 cat > /etc/sudoers << EOF
@@ -143,14 +144,16 @@ pjamaadmin ALL=(ALL) ALL
 #includedir /etc/sudoers.d
 EOF
 
-mkdir /nfs /nfs/home /nfs/scripts
-mount bobby:/nfs/scripts /nfs/scripts
+apt install python3-pip -y
 
-cd /nfs/scripts/beacon
+mkdir /nfs
+mount bobby:/nfs/ /nfs/
+
+cd /nfs/home/user01/beacon
 python3 setup.py install
 
-cd /nfs/scripts/lighthouse
+cd /nfs/home/user01/lighthouse
 python3 setup.py install
 
-cd /nfs/scripts/tempo
+cd /nfs/home/user01/tempo
 python3 setup.py install

@@ -48,7 +48,7 @@ cat > /etc/rc.local << EOF
 # start nis related services
 systemctl restart rpcbind
 systemctl restart nis
-python3 /nfs/scripts/beacon_agent/beacon/beacon.py
+python3 /nfs/home/user01/beacon_agent/beacon/beacon.py
 exit 0
 EOF
 
@@ -102,7 +102,6 @@ UUID=$(blkid -s UUID -o value /dev/sda1) /               ext4    errors=remount-
 /swapfile                                 none            swap    sw              0       0
 # pjama related mounts
 bobby:/nfs/home /nfs/home nfs rw,soft,x-systemd.automount 0 0
-bobby:/nfs/scripts /nfs/scripts nfs rw,soft,x-systemd.automount 0 0
 EOF
 
 cat > /etc/sudoers << EOF
@@ -139,11 +138,11 @@ pjamaadmin ALL=(ALL) ALL
 #includedir /etc/sudoers.d
 EOF
 
-mkdir /nfs /nfs/home /nfs/scripts
-mount bobby:/nfs/scripts /nfs/scripts
+mkdir /nfs /nfs/home
+mount bobby:/nfs/home /nfs/home
 
 #Beacon agent
-cd /nfs/scripts/beacon_agent
+cd /nfs/home/user01/beacon_agent
 python3 setup.py install
 
 #Give a hint to Ansible this is done
