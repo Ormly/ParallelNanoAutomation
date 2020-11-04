@@ -3,6 +3,8 @@
 external=ens33
 internal=ens34
 wcno=2
+adminAccount=pjamaadmin
+userAccount=user
 
 #Set ip address, change
 nmcli c modify Wired\ connection\ $wcno ipv4.addresses 192.168.21.1/24 ipv4.dns "192.168.21.1,8.8.8.8" ipv4.method manual
@@ -705,96 +707,6 @@ EOF
 
 systemctl restart nis
 
-cat > create_admin << EOF
-#!/bin/bash
-#Takes can take in 0..2 parameters
-#0 parameters - prompts for username and password
-#1 parameter - user is created with username and password as parameter
-#2 parameters - user is created with username as first parameter and password as second parameter
-username=
-password=
-
-#If no parameters are given
-if [ "\$1" == "" ]; then
-	echo -n "Enter a username: "
-	read username
-	echo -n "Enter a password: ["\$username"] "
-	read password
-	if [ "\$password" == "" ]; then
-		password="\$username"
-	fi
-
-#If username and password are given
-elif [ "\$1" != "" ] && [ "\$2" != "" ]; then
-	username="\$1"
-	password="\$2"
-
-#If username is given
-else
-	username="\$1"
-	password="\$1"
-fi
-
-adduser "\$username" --quiet --disabled-password --ingroup pjama-admin --home /nfs/home/"\$username" --gecos "\$username"
-echo "\$username:\$password" | chpasswd
-make -C /var/yp
-EOF
-
-cat > create_user << EOF
-#!/bin/bash
-#Takes can take in 0..2 parameters
-#0 parameters - prompts for username and password
-#1 parameter - user is created with username and password as parameter
-#2 parameters - user is created with username as first parameter and password as second parameter
-username=
-password=
-
-#If no parameters are given
-if [ "\$1" == "" ]; then
-	echo -n "Enter a username: "
-	read username
-	echo -n "Enter a password: ["\$username"] "
-	read password
-	if [ "\$password" == "" ]; then
-		password="\$username"
-	fi
-
-#If username and password are given
-elif [ "\$1" != "" ] && [ "\$2" != "" ]; then
-	username="\$1"
-	password="\$2"
-
-#If username is given
-else
-	username="\$1"
-	password="\$1"
-fi
-
-adduser "\$username" --quiet --disabled-password --ingroup pjama-user --home /nfs/home/"\$username" --gecos "\$username"
-echo "\$username:\$password" | chpasswd
-make -C /var/yp
-EOF
-
-cat > remove_user << EOF
-#!/bin/bash
-if [ "\$1" != "" ]; then
-	deluser --remove-home "\$1"
-	make -C /var/yp
-else
-	echo "No parameter given"
-fi
-EOF
-
-chmod +x create_admin
-chmod +x create_user
-chmod +x remove_user
-
-# Add user johnny to database
-addgroup --gid 1110 pjama-admin
-addgroup --gid 1111 pjama-user
-./create_user pjamauser
-./create_user pjamaadmin
-
 cat > /etc/sudoers << EOF
 #
 # This file MUST be edited with the 'visudo' command as root.
@@ -816,7 +728,7 @@ Defaults	secure_path="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/b
 
 # User privilege specification
 root	ALL=(ALL:ALL) ALL
-pjamaadmin ALL=(ALL) ALL
+$adminAccount ALL=(ALL) ALL
 
 # Members of the admin group may gain root privileges
 %admin ALL=(ALL) ALL
@@ -886,7 +798,7 @@ Ve8urkgczrcAAAAVamVkaXRpbUBob3RtYWlsLmNvLnVrAQIDBAUG
 -----END OPENSSH PRIVATE KEY-----
 EOF
 
-chmod 000 id_rsa
+chmod 600 id_rsa
 
 ssh-add id_rsa
 eval $(ssh-agent -s)
@@ -902,15 +814,52 @@ mkdir -p /root/.ssh
 mv id_rsa /root/.ssh/id_rsa
 mv known_hosts /root/.ssh/known_hosts
 
-cd /nfs/scripts
-git clone git@github.com:Ormly/ParallelNano_Lisa_Beacon.git
-git clone git@github.com:Ormly/ParallelNano_Lisa_Beacon_Agent.git
-git clone git@github.com:Ormly/ParallelNano_Lisa_Lighthouse.git
-git clone git@github.com:Ormly/ParallelNanoAutomation.git
-git clone git@github.com:Ormly/ParallelNano_Lisa_Tempo.git
-git clone git@github.com:Ormly/ParallelNanoShowcase.git
-chmod +x -R *
-cd ~
+cat > create_user << EOF
+#!/bin/bash
+#Takes can take in 0..2 parameters
+#0 parameters - prompts for username and password
+#1 parameter - user is created with username and password as parameter
+#2 parameters - user is created with username as first parameter and password as second parameter
+username=
+password=
+
+#If no parameters are given
+if [ "\$1" == "" ]; then
+	echo -n "Enter a username: "
+	read username
+	echo -n "Enter a password: ["\$username"] "
+	read password
+	if [ "\$password" == "" ]; then
+		password="\$username"
+	fi
+
+#If username and password are given
+elif [ "\$1" != "" ] && [ "\$2" != "" ]; then
+	username="\$1"
+	password="\$2"
+
+#If username is given
+else
+	username="\$1"
+	password="\$1"
+fi
+
+adduser "\$username" --quiet --disabled-password --ingroup pjama-group --home /nfs/home/"\$username" --gecos "\$username"
+echo "\$username:\$password" | chpasswd
+make -C /var/yp
+
+mkdir /nfs/home/"\$username"/.ssh/
+cp /root/.ssh/id_rsa /nfs/home/"\$username"/.ssh/id_rsa
+chown "\$username":pjama-group /nfs/home/"\$username" /nfs/home/"\$username"/.ssh -R
+chmod 600 /nfs/home/"\$username"/.ssh/id_rsa
+EOF
+
+chmod +x create_user
+
+# Add users to the database
+addgroup --gid 1110 pjama-group
+./create_user $userAccount
+./create_user $adminAccount
 
 apt-get install software-properties-common -y
 apt-add-repository ppa:ansible/ansible -y
