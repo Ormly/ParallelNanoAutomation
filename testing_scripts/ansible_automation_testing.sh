@@ -32,7 +32,7 @@ if [[ $package_status == *"Status: install ok installed"* ]]; then
 #else install package and test result
 else
 	#Run playbook
-	ansible-playbook /nfs/scripts/automation/playbooks/install_apt_package.yml -i "/nfs/scripts/automation/inventory.ini" -e "target=master package=$package_name"
+	ansible-playbook /nfs/scripts/automation/playbooks/install_apt_package.yml -i "/nfs/scripts/automation/inventory.ini" -e "target=nodes package=$package_name"
 	#Check the package if installed
 	package_status=$(dpkg -s $package_name) >/dev/null
 	if [[ $package_status == *"Status: install ok installed"* ]]; then
@@ -45,10 +45,27 @@ fi
 
 
 #Remove_apt_package.yml
-#echo "Testing Remove_apt_package.yml playbook..."
+echo "Testing Remove_apt_package.yml playbook..."
 #Check the package is installed
-#Run playbook
-#Check the package if removed
+package_status=$(dpkg -s $package_name) >/dev/null
+
+#if package is not installed abort the test
+if [[ $package_status != *"Status: install ok installed"* ]]; then
+	echo -e "$RED $package_name is not installed $NC"
+	echo "Remove_apt_package.yml test aborting..."
+#else remove package and test result
+else
+	#Run playbook
+	ansible-playbook /nfs/scripts/automation/playbooks/remove_apt_package.yml -i "/nfs/scripts/automation/inventory.ini" -e "target=nodes package=$package_name"
+	#Check the package if no longer installed
+	package_status=$(dpkg -s $package_name) >/dev/null
+	if [[ $package_status != *"Status: install ok installed"* ]]; then
+		echo -e "$GREEN $package_name is now uninstalled $NC"
+	else
+		echo -e "$RED ERROR: $package_name still installed on all nodes $NC"
+		exit 4
+	fi
+fi
 
 #Kickstart_computer_node.yml
 #echo "Testing Kickstart_computer_node.yml playbook..."
@@ -79,9 +96,9 @@ echo "Testing Update_upgrade.yml playbook..."
 update_status=$(ansible-playbook /nfs/scripts/automation/playbooks/update_upgrade.yml -i "/nfs/scripts/automation/inventory.ini" -e target=nodes)
 #Check update cache
 if [[ $? -eq 0 ]]; then
-	echo -e "$GREEN Nodes succesfully updated $NC"
+	echo -e "$GREEN Nodes succesfully updated/upgraded $NC"
 else
-	echo -e "$RED ERROR: Nodes not upgraded $NC"
+	echo -e "$RED ERROR: Nodes not updated/upgraded $NC"
 	exit 8
 fi
 
