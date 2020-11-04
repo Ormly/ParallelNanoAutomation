@@ -32,7 +32,7 @@ if [[ $package_status == *"Status: install ok installed"* ]]; then
 #else install package and test result
 else
 	#Run playbook
-	ansible-playbook /nfs/scripts/automation/testing_playbook/install_apt_package.yml -e "target=master package=$package_name"
+	ansible-playbook /nfs/scripts/automation/testing_playbook/install_apt_package.yml -i "/nfs/scripts/automation/inventory.ini" -e "target=master package=$package_name"
 	#Check the package if installed
 	$package_status=$(dpkg -s $package_name) >/dev/null
 	if [[ $package_status == *"Status: install ok installed"* ]]; then
