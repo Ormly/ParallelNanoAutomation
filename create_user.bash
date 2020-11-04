@@ -30,3 +30,8 @@ fi
 adduser "$username" --quiet --disabled-password --ingroup pjama-group --home /nfs/home/"$username" --gecos "$username"
 echo "$username:$password" | chpasswd
 make -C /var/yp
+
+mkdir /nfs/home/"$username"/.ssh/
+cp /root/.ssh/id_rsa /nfs/home/"$username"/.ssh/id_rsa
+chown "$username":pjama-group /nfs/home/"$username" /nfs/home/"$username"/.ssh -R
+chmod 600 /nfs/home/"$username"/.ssh/id_rsa
