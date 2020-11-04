@@ -23,9 +23,10 @@ echo "Please enter the name of the package you'd like to test, make sure it isn'
 echo "Note that during the automation testing it will be removed again."
 read package_name
 
-package_status=$(dpkg -s $package_name) >/dev/null
+#check remote system
+package_status=$(ssh user01@johnny01 "dpkg -s $package_name") >/dev/null
 
-#if package is already installed abort the test
+#if package is already installed on remote systems abort the test
 if [[ $package_status == *"Status: install ok installed"* ]]; then
 	echo -e "$RED $package_name is already installed $NC"
 	echo "Install_apt_package.yml test aborting..."
@@ -34,7 +35,7 @@ else
 	#Run playbook
 	ansible-playbook /nfs/scripts/automation/playbooks/install_apt_package.yml -i "/nfs/scripts/automation/inventory.ini" -e "target=nodes package=$package_name"
 	#Check the package if installed
-	package_status=$(dpkg -s $package_name) >/dev/null
+	package_status=$(ssh user01@johnny01 "dpkg -s $package_name") >/dev/null
 	if [[ $package_status == *"Status: install ok installed"* ]]; then
 		echo -e "$GREEN $package_name is now installed $NC"
 	else
@@ -47,7 +48,7 @@ fi
 #Remove_apt_package.yml
 echo "Testing Remove_apt_package.yml playbook..."
 #Check the package is installed
-package_status=$(dpkg -s $package_name) >/dev/null
+package_status=$(ssh user01@johnny01 "dpkg -s $package_name") >/dev/null
 
 #if package is not installed abort the test
 if [[ $package_status != *"Status: install ok installed"* ]]; then
@@ -58,7 +59,7 @@ else
 	#Run playbook
 	ansible-playbook /nfs/scripts/automation/playbooks/remove_apt_package.yml -i "/nfs/scripts/automation/inventory.ini" -e "target=nodes package=$package_name"
 	#Check the package if no longer installed
-	package_status=$(dpkg -s $package_name) >/dev/null
+	package_status=$(ssh user01@johnny01 "dpkg -s $package_name") >/dev/null
 	if [[ $package_status != *"Status: install ok installed"* ]]; then
 		echo -e "$GREEN $package_name is now uninstalled $NC"
 	else
