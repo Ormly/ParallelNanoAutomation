@@ -48,7 +48,7 @@ cat > /etc/rc.local << EOF
 # start nis related services
 systemctl restart rpcbind
 systemctl restart nis
-python3 /nfs/home/user01/beacon_agent/beacon/beacon.py
+python3 /nfs/scripts/beacon_agent/beacon/beacon.py
 exit 0
 EOF
 
@@ -143,7 +143,7 @@ mkdir /nfs
 mount bobby:/nfs/ /nfs/
 
 #Beacon agent
-cd /nfs/home/user01/beacon_agent
+cd /nfs/scripts/beacon_agent
 python3 setup.py install
 
 #Give a hint to Ansible this is done

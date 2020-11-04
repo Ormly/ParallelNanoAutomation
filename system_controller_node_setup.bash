@@ -51,9 +51,9 @@ cat > /etc/rc.local << EOF
 # By default this script does nothing.# start nis related services
 systemctl restart rpcbind
 systemctl restart nis
-python3 /nfs/home/user01/beacon/beacon_server/beacon_server_daemon.py
-python3 /nfs/home/user01/tempo/tempo/tempo.py
-cd /nfs/home/user01/lighthouse/
+python3 /nfs/scripts/beacon/beacon_server/beacon_server_daemon.py
+python3 /nfs/scripts/tempo/tempo/tempo.py
+cd /nfs/scripts/lighthouse/
 gunicorn -w 8 wsgi:app --daemon
 exit 0
 EOF
@@ -149,11 +149,11 @@ apt install python3-pip -y
 mkdir /nfs
 mount bobby:/nfs/ /nfs/
 
-cd /nfs/home/user01/beacon
+cd /nfs/scripts/beacon
 python3 setup.py install
 
-cd /nfs/home/user01/lighthouse
+cd /nfs/scripts/lighthouse
 python3 setup.py install
 
-cd /nfs/home/user01/tempo
+cd /nfs/scripts/tempo
 python3 setup.py install
