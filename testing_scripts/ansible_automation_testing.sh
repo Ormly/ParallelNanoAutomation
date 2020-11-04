@@ -12,7 +12,7 @@ ansible_status=$(dpkg -s ansible)>/dev/null
 if [[ $ansible_status == *"Status: install ok installed"* ]]; then
 	echo -e "$GREEN Ansible installed $NC"
 else
-	echo -e "$RED Ansible not installed $NC"
+	echo -e "$RED ERROR: Ansible not installed $NC"
 	exit 2
 fi
 
@@ -32,45 +32,57 @@ if [[ $package_status == *"Status: install ok installed"* ]]; then
 #else install package and test result
 else
 	#Run playbook
-	ansible-playbook /nfs/scripts/automation/testing_playbook/install_apt_package.yml -i "/nfs/scripts/automation/inventory.ini" -e "target=master package=$package_name"
+	ansible-playbook /nfs/scripts/automation/playbooks/install_apt_package.yml -i "/nfs/scripts/automation/inventory.ini" -e "target=master package=$package_name"
 	#Check the package if installed
 	package_status=$(dpkg -s $package_name) >/dev/null
 	if [[ $package_status == *"Status: install ok installed"* ]]; then
 		echo -e "$GREEN $package_name is now installed $NC"
 	else
-		echo -e "$RED $package_name not installed $NC"
+		echo -e "$RED ERROR: $package_name not installed on all nodes $NC"
 		exit 3
 	fi
 fi
 
 
 #Remove_apt_package.yml
+#echo "Testing Remove_apt_package.yml playbook..."
 #Check the package is installed
 #Run playbook
 #Check the package if removed
 
 #Kickstart_computer_node.yml
+#echo "Testing Kickstart_computer_node.yml playbook..."
 #Run playbook in a “pure johnny”
 #Run testing johnny script
 
 #Kickstart_control_node.yml
+#echo "Testing Kickstart_control_node.yml playbook..."
 #Run playbook in a “pure lisa”
 #Run testing lisa script
 
 #Reboot.yml
+#echo "Testing Reboot.yml playbook..."
 #Record current time (T1)
 #Run playbook
 #Check up time and current time (T2), to see whether the uptime = T2 - T1
 #(T1 and T2 maybe not that accurate, maybe just check the up time at the end??)
 
 #Shutdown.yml
+#echo "Testing Shutdown.yml playbook..."
 #Ping the machine to make sure it is online
 #Run playbook
 #Ping the machine to see if it is shut down
 
 #Update_upgrade.yml
+echo "Testing Update_upgrade.yml playbook..."
 #Run playbook
+update_status=$(ansible-playbook /nfs/scripts/automation/playbooks/update_upgrade.yml -i "/nfs/scripts/automation/inventory.ini" -e target=nodes)
 #Check update cache
-
+if [[ $? -eq 0 ]]; then
+	echo -e "$GREEN Nodes succesfully updated $NC"
+else
+	echo -e "$RED ERROR: Nodes not upgraded $NC"
+	exit 8
+fi
 
 echo "End of Ansible automation testing"
