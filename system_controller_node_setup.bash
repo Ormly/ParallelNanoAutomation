@@ -5,7 +5,6 @@ apt update
 apt install nfs-common gcc g++ git make mpich openssh-server build-essential libffi-dev -y
 apt install RPi.GPIO -y
 timedatectl set-timezone Europe/Berlin
-hostnamectl set-hostname lisa
 
 #NIS setup
 echo "nis nis/domain string pjama" > /tmp/nisinfo

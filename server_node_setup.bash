@@ -838,6 +838,9 @@ addgroup --gid 1110 pjama-group
 ./create_user $userAccount
 ./create_user $adminAccount
 
+chown "$adminAccount":pjama-group /nfs/
+chmod 775 /nfs/
+
 apt-get install software-properties-common -y
 apt-add-repository ppa:ansible/ansible -y
 apt-get install openssh-server build-essential mpich ansible -y
