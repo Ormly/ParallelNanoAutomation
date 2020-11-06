@@ -1,5 +1,5 @@
 #!/bin/bash
-cd ~
+cd /nfs/scripts/
 git clone git@github.com:Ormly/ParallelNanoAutomation.git automation
 git clone git@github.com:Ormly/ParallelNano_Lisa_Beacon.git beacon
 git clone git@github.com:Ormly/ParallelNano_Lisa_Beacon_Agent.git beacon_agent

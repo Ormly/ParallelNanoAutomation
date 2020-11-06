@@ -1,9 +1,10 @@
 #!/bin/bash
 #Updates, timezone and hostname
 apt full-upgrade -y
-apt-get install nfs-common gcc g++ git make mpich openssh-server build-essential python3-pip libffi-dev RPi.GPIO -y
+apt update
+apt install nfs-common gcc g++ git make mpich openssh-server build-essential libffi-dev -y
+apt install RPi.GPIO -y
 timedatectl set-timezone Europe/Berlin
-hostnamectl set-hostname lisa
 
 #NIS setup
 echo "nis nis/domain string pjama" > /tmp/nisinfo
@@ -105,8 +106,7 @@ cat > /etc/fstab << EOF
 UUID=$(blkid -s UUID -o value /dev/sda1) /               ext4    errors=remount-ro 0       1
 /swapfile                                 none            swap    sw              0       0
 # pjama related mounts
-bobby:/nfs/home /nfs/home nfs rw,soft,x-systemd.automount 0 0
-bobby:/nfs/scripts /nfs/scripts nfs rw,soft,x-systemd.automount 0 0
+bobby:/nfs/ /nfs/ nfs rw,soft,x-systemd.automount 0 0
 EOF
 
 cat > /etc/sudoers << EOF
@@ -143,8 +143,10 @@ pjamaadmin ALL=(ALL) ALL
 #includedir /etc/sudoers.d
 EOF
 
-mkdir /nfs /nfs/home /nfs/scripts
-mount bobby:/nfs/scripts /nfs/scripts
+apt install python3-pip -y
+
+mkdir /nfs
+mount bobby:/nfs/ /nfs/
 
 cd /nfs/scripts/beacon
 python3 setup.py install
