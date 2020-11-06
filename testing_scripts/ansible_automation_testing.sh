@@ -97,22 +97,32 @@ else
 	exit 5
 fi
 
-#---------------NOT SURE HOW TO TEST-----------------
 #Reboot.yml
-#echo "Testing Reboot.yml playbook..."
+echo "Testing Reboot.yml playbook..."
 #Record current time (T1)
 #Run playbook
 #Check up time and current time (T2), to see whether the uptime = T2 - T1
 #(T1 and T2 maybe not that accurate, maybe just check the up time at the end??)
-#	|
-#	--------> MAYBE
-#
+
 #Shutdown.yml
-#echo "Testing Shutdown.yml playbook..."
+echo "Testing Shutdown.yml playbook..."
 #Ping the machine to make sure it is online
+for var in 1 2 3 4 5 6 7 8
+do
+	johnnyX=$(host johnny$var) >/dev/null
+	if [[ $? -eq 0 ]]; then
+		ping -q -c 1 johnny$var ;
+		if [[ $? -eq 0 ]]; then
+			echo -e "$GREEN johnny$var reachable $NC"
+		else
+			echo -e "$RED ERROR: johnny$var unreachable $NC" 1>&2
+			exit 12
+		fi
+	fi
+done
+
 #Run playbook
 #Ping the machine to see if it is shut down
-#----------------------------------------------------
 
 #Update_upgrade.yml
 echo "Testing Update_upgrade.yml playbook..."

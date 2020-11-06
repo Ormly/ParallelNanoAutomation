@@ -31,7 +31,7 @@ fi
 #To check if NIS is running, use the ypcat passwd file that needs to be accessible
 nis_passwd_file=$(ypcat passwd)
 echo "Testing NIS Client"
-if [[ $? == *"0"* ]]; then
+if [[ $? != *"0"* ]]; then
 	echo -e "$RED ERROR: NIS passwd service not running properly $NC" 1>&2
 	exit 11
 else
@@ -61,13 +61,13 @@ fi
 #Ping every Johnny
 for var in 1 2 3 4 5 6 7 8
 do
-	johnnyX=$(host johnny0$var) >/dev/null
+	johnnyX=$(host johnny$var) >/dev/null
 	if [[ $? -eq 0 ]]; then
-		ping -q -c 1 johnny01 ;
+		ping -q -c 1 johnny$var ;
 		if [[ $? -eq 0 ]]; then
-			echo -e "$GREEN Johnny0$var reachable $NC"
+			echo -e "$GREEN johnny$var reachable $NC"
 		else
-			echo -e "$RED ERROR: Johnny0$var unreachable $NC" 1>&2
+			echo -e "$RED ERROR: johnny$var unreachable $NC" 1>&2
 			exit 12
 		fi
 	fi
