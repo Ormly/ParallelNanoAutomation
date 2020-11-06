@@ -31,7 +31,7 @@ fi
 #To check if NIS is running, use the ypcat passwd file that needs to be accessible
 nis_passwd_file=$(ypcat passwd)
 echo "Testing NIS Client"
-if [[ $? -eq 0 ]]; then
+if [[ $? == *"0"* ]]; then
 	echo -e "$RED ERROR: NIS passwd service not running properly $NC" 1>&2
 	exit 11
 else
