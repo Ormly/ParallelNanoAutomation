@@ -9,7 +9,7 @@ NC='\033[0m'
 mounts=$(showmount -e bobby)
 echo "Tests starting---------------------------------"
 echo "Testing NFS Server"
-if [[ $mounts != *"/nfs/home"* || $mounts != *"/opt/mpiCommon"* ]]; then
+if [[ $mounts != *"/nfs"* || $mounts != *"/opt/mpiCommon"* ]]; then
         echo -e "$RED ERROR: NFS $NC" 1>&2
         exit 10
 else
