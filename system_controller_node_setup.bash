@@ -1,5 +1,6 @@
 #!/bin/bash
 #Updates, timezone and hostname
+echo "Updating may take a while..."
 until apt update -y > /dev/null 2>&1; do :; done
 until apt full-upgrade -y > /dev/null 2>&1; do :; done
 apt install nfs-common gcc g++ git make mpich openssh-server build-essential libffi-dev -y

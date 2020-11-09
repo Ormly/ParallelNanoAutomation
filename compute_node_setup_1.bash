@@ -1,4 +1,5 @@
 #!/bin/bash
+echo "Updating may take a while..."
 until apt update -y > /dev/null 2>&1; do :; done
 until apt full-upgrade -y > /dev/null 2>&1; do :; done
 apt-get install nfs-common gcc g++ git make mpich openssh-server build-essential python3-pip libffi-dev -y
