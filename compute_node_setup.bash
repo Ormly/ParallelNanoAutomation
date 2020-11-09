@@ -1,5 +1,7 @@
 #!/bin/bash
-apt full-upgrade -y
+echo "Updating may take a while..."
+until apt update -y > /dev/null 2>&1; do :; done
+until apt full-upgrade -y > /dev/null 2>&1; do :; done
 apt-get install nfs-common gcc g++ git make mpich openssh-server build-essential python3-pip libffi-dev -y
 timedatectl set-timezone Europe/Berlin
 
@@ -126,10 +128,10 @@ Defaults	secure_path="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/b
 
 # User privilege specification
 root	ALL=(ALL:ALL) ALL
-pjamaadmin ALL=(ALL) ALL
 
 # Members of the admin group may gain root privileges
 %admin ALL=(ALL) ALL
+%pjama-admin ALL=(ALL) ALL
 
 # Allow members of group sudo to execute any command
 %sudo	ALL=(ALL:ALL) ALL

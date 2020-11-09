@@ -1,7 +1,8 @@
 #!/bin/bash
 #Updates, timezone and hostname
-apt full-upgrade -y
-apt update
+echo "Updating may take a while..."
+until apt update -y > /dev/null 2>&1; do :; done
+until apt full-upgrade -y > /dev/null 2>&1; do :; done
 apt install nfs-common gcc g++ git make mpich openssh-server build-essential libffi-dev -y
 apt install RPi.GPIO -y
 timedatectl set-timezone Europe/Berlin
@@ -130,10 +131,10 @@ Defaults	secure_path="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/b
 
 # User privilege specification
 root	ALL=(ALL:ALL) ALL
-pjamaadmin ALL=(ALL) ALL
 
 # Members of the admin group may gain root privileges
 %admin ALL=(ALL) ALL
+%pjama-admin ALL=(ALL) ALL
 
 # Allow members of group sudo to execute any command
 %sudo	ALL=(ALL:ALL) ALL
