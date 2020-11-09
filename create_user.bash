@@ -7,7 +7,7 @@ username=
 password=
 
 #If no parameters are given
-if [ "$1" == "" ]; then
+if [ "$#" == 0 ]; then
 	echo -n "Enter a username: "
 	read username
 	echo -n "Enter a password: ["$username"] "
@@ -16,15 +16,18 @@ if [ "$1" == "" ]; then
 		password="$username"
 	fi
 
-#If username and password are given
-elif [ "$1" != "" ] && [ "$2" != "" ]; then
-	username="$1"
-	password="$2"
-
 #If username is given
-else
+elif [ "$#" == 1 ]; then
 	username="$1"
 	password="$1"
+
+#If username and password are given
+elif [ "$#" == 2]; then
+	username="$1"
+	password="$2"
+	
+else
+	exit
 fi
 
 adduser "$username" --quiet --disabled-password --ingroup pjama-group --home /nfs/home/"$username" --gecos "$username"
