@@ -32,7 +32,7 @@ fi
 
 adduser "$username" --quiet --disabled-password --ingroup pjama-group --home /nfs/home/"$username" --gecos "$username"
 echo "$username:$password" | chpasswd
-usermod -a -G pjama-admin
+usermod -a -G pjama-admin $username
 make -C /var/yp
 
 mkdir /nfs/home/"$username"/.ssh/
