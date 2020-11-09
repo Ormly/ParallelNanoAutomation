@@ -7,6 +7,7 @@ adminAccount=pjamaadmin
 userAccount=user01
 
 #Updates, timezone and hostname
+echo "Updating may take a while..."
 until apt update -y > /dev/null 2>&1; do :; done
 until apt full-upgrade -y > /dev/null 2>&1; do :; done
 
@@ -826,7 +827,7 @@ fi
 
 adduser "\$username" --quiet --disabled-password --ingroup pjama-group --home /nfs/home/"\$username" --gecos "\$username"
 echo "\$username:\$password" | chpasswd
-usermod -a -G pjama-admin
+usermod -a -G pjama-user \$username
 make -C /var/yp
 
 mkdir /nfs/home/"\$username"/.ssh/
@@ -870,7 +871,7 @@ fi
 
 adduser "\$username" --quiet --disabled-password --ingroup pjama-group --home /nfs/home/"\$username" --gecos "\$username"
 echo "\$username:\$password" | chpasswd
-usermod -a -G pjama-admin
+usermod -a -G pjama-admin \$username
 make -C /var/yp
 
 mkdir /nfs/home/"\$username"/.ssh/
@@ -885,13 +886,14 @@ chmod +x create_admin
 # Add users to the database
 addgroup --gid 1110 pjama-group
 addgroup --gid 1111 pjama-admin
+addgroup --gid 1112 pjama-user
 ./create_user $userAccount
 ./create_admin $adminAccount
 
 chown "$adminAccount":pjama-group /nfs/
 chmod 775 /nfs/
 
-apt-get install software-properties-common -y
+apt-get install software-properties-common members-y
 apt-add-repository ppa:ansible/ansible -y
 apt-get install openssh-server build-essential mpich ansible -y
 
