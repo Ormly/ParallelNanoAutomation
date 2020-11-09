@@ -9,7 +9,7 @@ NC='\033[0m'
 mounts=$(showmount -e bobby)
 echo "Tests starting---------------------------------"
 echo "Testing NFS Client"
-if [[ $mounts != *"/nfs/home"* || $mounts != *"/opt/mpiCommon"* ]]; then
+if [[ $mounts != *"/nfs"* || $mounts != *"/opt/mpiCommon"* ]]; then
         echo -e "$RED ERROR: NFS $NC" 1>&2
         exit 10
 else
@@ -17,10 +17,10 @@ else
 fi
 #Check if permissions are properly set up in the shared dirs
 echo "Testing NFS permissions"
-new_file=$(cd /nfs/home && sudo touch test.txt)
+new_file=$(cd /nfs && touch test.txt)
 if [[ ?$ ]]; then
 	echo -e "$GREEN NFS permissions passed $NC"
-	sudo rm /nfs/home/test.txt 
+	rm /nfs/test.txt 
 else
 	echo -e "$RED NFS permissions failed $NC"
 	exit 10
