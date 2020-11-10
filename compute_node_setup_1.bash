@@ -6,6 +6,17 @@ apt-get install nfs-common gcc g++ git make mpich openssh-server build-essential
 timedatectl set-timezone Europe/Berlin
 systemctl set-default multi-user.target
 
+cat > /etc/hosts << EOF
+127.0.0.1	localhost
+
+# The following lines are desirable for IPv6 capable hosts
+::1     ip6-localhost ip6-loopback
+fe00::0 ip6-localnet
+ff00::0 ip6-mcastprefix
+ff02::1 ip6-allnodes
+ff02::2 ip6-allrouters
+EOF
+
 #NIS setup
 echo "nis nis/domain string pjama" > /tmp/nisinfo
 debconf-set-selections /tmp/nisinfo
