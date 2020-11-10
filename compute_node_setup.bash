@@ -4,6 +4,7 @@ until apt update -y > /dev/null 2>&1; do :; done
 until apt full-upgrade -y > /dev/null 2>&1; do :; done
 apt-get install nfs-common gcc g++ git make mpich openssh-server build-essential python3-pip libffi-dev -y
 timedatectl set-timezone Europe/Berlin
+systemctl set-default multi-user.target
 
 #NIS setup
 echo "nis nis/domain string pjama" > /tmp/nisinfo
