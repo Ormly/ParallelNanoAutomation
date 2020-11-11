@@ -12,7 +12,6 @@
         - check the uptime after reboot 
         - print uptime
 
-
     - name: execute installation script
       script: ../system_controller_node_setup.bash
       notify: 
