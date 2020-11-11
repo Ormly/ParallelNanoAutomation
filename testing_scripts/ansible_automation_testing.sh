@@ -43,13 +43,17 @@ else
 	#Run playbook
 	ansible-playbook /nfs/scripts/automation/playbooks/install_apt_package.yml -i "/nfs/scripts/automation/inventory.ini" -e "target=nodes package=$package_name"
 	#Check the package if installed
-	package_status=$(ssh johnny01 "dpkg -s $package_name") >/dev/null
-	if [[ $package_status == *"Status: install ok installed"* ]]; then
-		echo -e "$GREEN $package_name is now installed $NC"
-	else
-		echo -e "$RED ERROR: $package_name not installed on all nodes $NC"
-		exit 3
-	fi
+	for var in ${loop_num[@]}
+	do
+		package_status=$(ssh johnny0$var "dpkg -s $package_name") >/dev/null
+		if [[ $package_status == *"Status: install ok installed"* ]]; then
+			echo -e "$GREEN $package_name installed on johnny0$var $NC"
+		else
+			echo -e "$RED ERROR: $package_name not installed on johnny0$var $NC"
+			exit 3
+		fi
+	done
+	
 fi
 
 
@@ -68,13 +72,16 @@ else
 	#Run playbook
 	ansible-playbook /nfs/scripts/automation/playbooks/remove_apt_package.yml -i "/nfs/scripts/automation/inventory.ini" -e "target=nodes package=$package_name"
 	#Check the package if no longer installed
-	package_status=$(ssh johnny01 "dpkg -s $package_name") >/dev/null
-	if [[ $package_status != *"Status: install ok installed"* ]]; then
-		echo -e "$GREEN $package_name is now uninstalled $NC"
-	else
-		echo -e "$RED ERROR: $package_name still installed on certain nodes $NC"
-		exit 4
-	fi
+	for var in ${loop_num[@]}
+	do
+		package_status=$(ssh johnny0$var "dpkg -s $package_name") >/dev/null
+		if [[ $package_status != *"Status: install ok installed"* ]]; then
+			echo -e "$GREEN $package_name is now uninstalled on johnny$var $NC"
+		else
+			echo -e "$RED ERROR: $package_name still installed on johnny$var $NC"
+			exit 4
+		fi
+	done
 fi
 
 
