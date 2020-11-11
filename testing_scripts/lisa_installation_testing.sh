@@ -59,7 +59,7 @@ fi
 #Test temperature sensor to see if response is well formatted and sensor is running
 #Well formatted => 
 echo "Testing temperature and humidity sensor"
-sensorRes=$(python3 test_hdc1080.py)
+sensorRes=$(python3 /nfs/scripts/tempo/tempo/test_hdc1080.py)
 re='^[0-9]+([.][0-9]+)?$'
 if [[ $? -eq 0 ]]; then
 	if [[ $sensorRes == *"Temperature = $re"* ]]
