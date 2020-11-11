@@ -89,3 +89,4 @@ else
 fi
 
 echo "End of tests-----------------------------------"
+exit 0

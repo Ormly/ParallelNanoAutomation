@@ -77,3 +77,4 @@ if [[ $? -eq 0 ]]; then
 fi
 
 echo "End of tests-----------------------------------"
+exit 0

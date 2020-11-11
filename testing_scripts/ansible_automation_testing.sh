@@ -86,8 +86,8 @@ kickstart_status=$(ansible-playbook /nfs/scripts/automation/playbooks/kickstart_
 #Run testing johnny script
 for var in ${loop_num[@]}
 do
-	johnny_test=$(ssh johnny0$var "/nfs/scripts/automation/testing_scripts/johnny_installation_testing.sh")
-	if [[ $? -eg 0 ]]; then
+	
+	if [[ johnny_test=$(ssh johnny0$var "/nfs/scripts/automation/testing_scripts/johnny_installation_testing.sh") ]]; then
 		echo -e "$GREEN Johnny installation succesful $NC"
 	else
 		echo -e "$RED Johnny installation failed $NC"
@@ -101,8 +101,7 @@ echo "Testing Kickstart_control_node.yml playbook..."
 #Run playbook in a “pure lisa”
 kickstart_status=$(ansible-playbook /nfs/scripts/automation/playbooks/kickstart_control_node.yml -i "/nfs/scripts/automation/inventory.ini" -e target=controller)
 #Run testing lisa script
-lisa_test=$(ssh lisa "/nfs/scripts/automation/testing_scripts/lisa_installation_testing.sh")
-if [[ $? -eg 0 ]]; then
+if [[ lisa_test=$(ssh lisa "/nfs/scripts/automation/testing_scripts/lisa_installation_testing.sh") ]]; then
 	echo -e "$GREEN Lisa installation succesful $NC"
 else
 	echo -e "$RED Lisa installation failed $NC"
@@ -205,3 +204,4 @@ else
 fi
 
 echo "End of Ansible automation testing"
+exit 0
