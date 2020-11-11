@@ -4,6 +4,8 @@ RED='\033[0;31m'
 GREEN='\033[0;32m'
 NC='\033[0m'
 
+loop_num=(1 2 3 4 5 6 7 8)
+
 echo "Start of tests---------------------------------"
 
 #DHCP & DNS Server:
@@ -27,15 +29,15 @@ else
 fi
 
 #Ping every Johnny
-for var in 1 2 3 4 5 6 7 8
+for var in ${loop_num[@]}
 do
-	johnnyX=$(host johnny$var) >/dev/null
+	johnnyX=$(host johnny0$var) >/dev/null
 	if [[ $? -eq 0 ]]; then
-		ping -q -c 1 johnny$var ;
+		ping -q -c 1 johnny0$var ;
 		if [[ $? -eq 0 ]]; then
-			echo -e "$GREEN johnny$var reachable $NC"
+			echo -e "$GREEN johnny0$var reachable $NC"
 		else
-			echo -e "$RED ERROR: johnny$var unreachable $NC" 1>&2
+			echo -e "$RED ERROR: johnny0$var unreachable $NC" 1>&2
 			exit 12
 		fi
 	fi

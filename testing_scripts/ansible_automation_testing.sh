@@ -7,7 +7,7 @@ RED='\033[0;31m'
 GREEN='\033[0;32m'
 NC='\033[0m'
 
-loop_num=(1 2 3)
+loop_num=(1 2 3 4 5 6 7 8)
 
 #Start tests-----------------------------------
 echo "Starting Ansible automation testing"
@@ -32,7 +32,7 @@ echo "Note that during the automation testing it will be removed again."
 read package_name
 
 #check remote system
-package_status=$(ssh johnny1 "dpkg -s $package_name") >/dev/null
+package_status=$(ssh johnny01 "dpkg -s $package_name") >/dev/null
 
 #if package is already installed on remote systems abort the test
 if [[ $package_status == *"Status: install ok installed"* ]]; then
@@ -43,7 +43,7 @@ else
 	#Run playbook
 	ansible-playbook /nfs/scripts/automation/playbooks/install_apt_package.yml -i "/nfs/scripts/automation/inventory.ini" -e "target=nodes package=$package_name"
 	#Check the package if installed
-	package_status=$(ssh johnny1 "dpkg -s $package_name") >/dev/null
+	package_status=$(ssh johnny01 "dpkg -s $package_name") >/dev/null
 	if [[ $package_status == *"Status: install ok installed"* ]]; then
 		echo -e "$GREEN $package_name is now installed $NC"
 	else
@@ -57,7 +57,7 @@ fi
 #Remove_apt_package.yml
 echo "Testing Remove_apt_package.yml playbook..."
 #Check the package is installed
-package_status=$(ssh johnny1 "dpkg -s $package_name") >/dev/null
+package_status=$(ssh johnny01 "dpkg -s $package_name") >/dev/null
 
 #if package is not installed abort the test
 if [[ $package_status != *"Status: install ok installed"* ]]; then
@@ -68,7 +68,7 @@ else
 	#Run playbook
 	ansible-playbook /nfs/scripts/automation/playbooks/remove_apt_package.yml -i "/nfs/scripts/automation/inventory.ini" -e "target=nodes package=$package_name"
 	#Check the package if no longer installed
-	package_status=$(ssh johnny1 "dpkg -s $package_name") >/dev/null
+	package_status=$(ssh johnny01 "dpkg -s $package_name") >/dev/null
 	if [[ $package_status != *"Status: install ok installed"* ]]; then
 		echo -e "$GREEN $package_name is now uninstalled $NC"
 	else
@@ -84,14 +84,16 @@ echo "Testing Kickstart_computer_node.yml playbook..."
 #Run playbook in a “pure johnny”
 kickstart_status=$(ansible-playbook /nfs/scripts/automation/playbooks/kickstart_computer_node.yml -i "/nfs/scripts/automation/inventory.ini" -e target=nodes)
 #Run testing johnny script
-johnny_test=$(./johnny_installation_testing.sh)
-if [[ $? -eg 0 ]]; then
-	echo -e "$GREEN Johnny installation succesful $NC"
-else
-	echo -e "$RED Johnny installation failed $NC"
-	exit 5
-fi
-
+for var in ${loop_num[@]}
+do
+	johnny_test=$(ssh johnny0$var "/nfs/scripts/automation/testing_scripts/johnny_installation_testing.sh")
+	if [[ $? -eg 0 ]]; then
+		echo -e "$GREEN Johnny installation succesful $NC"
+	else
+		echo -e "$RED Johnny installation failed $NC"
+		exit 5
+	fi
+done
 
 #5
 #Kickstart_control_node.yml
@@ -99,7 +101,7 @@ echo "Testing Kickstart_control_node.yml playbook..."
 #Run playbook in a “pure lisa”
 kickstart_status=$(ansible-playbook /nfs/scripts/automation/playbooks/kickstart_control_node.yml -i "/nfs/scripts/automation/inventory.ini" -e target=controller)
 #Run testing lisa script
-lisa_test=$(./lisa_installation_testing.sh)
+lisa_test=$(ssh lisa "/nfs/scripts/automation/testing_scripts/lisa_installation_testing.sh")
 if [[ $? -eg 0 ]]; then
 	echo -e "$GREEN Lisa installation succesful $NC"
 else
@@ -181,9 +183,9 @@ done
 #Turn on the nodes again
 for t in $loop_num;
 do
-		cd /nfs/scripts/automation/lisa_scripts
-		python3 power_control.py power $t
-		echo "Turning on johnny$t again"
+	cd /nfs/scripts/automation/lisa_scripts
+	echo "Turning on johnny$t again"
+	python3 power_control.py power $t
 done
 
 echo "All johnnys turned back on, waiting for them to be responsive"
