@@ -5,8 +5,8 @@
   gather_facts: no
 
   tasks:
-   - name: disable auto update check
-      shell: systemctl disable --now apt-daily{,-upgrade}.{timer,service}
+    - name: disable auto update check
+      script: ../disable_auto_updates.bash
       notify: 
         - Reboot host
         - check the uptime after reboot 
