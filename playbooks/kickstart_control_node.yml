@@ -5,6 +5,14 @@
   gather_facts: no
 
   tasks:
+    - name: disable auto update check
+      shell: systemctl disable --now apt-daily{,-upgrade}.{timer,service}
+      notify: 
+        - Reboot host
+        - check the uptime after reboot 
+        - print uptime
+
+
     - name: execute installation script
       script: ../system_controller_node_setup.bash
       notify: 

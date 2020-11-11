@@ -1,22 +1,12 @@
 ---
-- name: set up computer nodes
+- name: set up system controller node
   hosts: "{{target}}"
   become: yes
   gather_facts: no
 
   tasks:
-   - name: disable auto update check
-      shell: systemctl disable --now apt-daily{,-upgrade}.{timer,service}
-      notify: 
-        - Reboot host
-        - check the uptime after reboot 
-        - print uptime
-    
-    - name: execute script 1
-      script: ../compute_node_setup_1.bash
-
-    - name: execute script 2
-      script: ../compute_node_setup_2.bash
+    - name: execute installation script
+      script: ../system_controller_node_setup.bash
       notify: 
         - Reboot host
         - check the uptime after reboot 
