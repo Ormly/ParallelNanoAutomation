@@ -819,15 +819,14 @@ chown "$adminAccount":pjama-group /nfs/
 chmod 775
 
 cd automation
-chmod +x create_user
-chmod +x create_admin
+chmod +x create_user.bash
 
 # Add users to the database
 addgroup --gid 1110 pjama-group
 addgroup --gid 1111 pjama-admin
 addgroup --gid 1112 pjama-user
-./create_user $userAccount
-./create_admin $adminAccount
+./create_user.bash -u $userAccount
+./create_user.bash -a $adminAccount
 
 apt-get install software-properties-common members-y
 apt-add-repository ppa:ansible/ansible -y

@@ -8,11 +8,11 @@ password=
 is_admin=false
 is_user=false
 
-local OPTIND opt i
+#local OPTIND opt i
 while getopts ":cmni:" opt; do
 	case $opt in
-		u) is_user=true
-		a) is_admin=true
+		u) is_user=true;;
+		a) is_admin=true;;
 		h) echo "-a for admin and -u for user";exit 1 ;; 
 	esac
 done
@@ -45,10 +45,10 @@ fi
 adduser "$username" --quiet --disabled-password --ingroup pjama-group --home /nfs/home/"$username" --gecos "$username"
 echo "$username:$password" | chpasswd
 if [ "$is_user" == "true" ]; then
-	usermod -a -G pjama-user "$username";;
+	usermod -a -G pjama-user "$username"
 fi
 if [ "$is_admin" == "true" ]; then
-	usermod -a -G pjama-admin "$username";;
+	usermod -a -G pjama-admin "$username"
 fi
 make -C /var/yp
 
