@@ -827,7 +827,7 @@ for D in *; do
 done
 
 chown "$adminAccount":pjama-group /nfs/
-chmod 775
+chmod 775 /nfs
 
 apt-get install software-properties-common -y
 apt-get install members -y
