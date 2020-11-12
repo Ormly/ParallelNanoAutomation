@@ -36,6 +36,15 @@ usermod -a -G pjama-user $username
 make -C /var/yp
 
 mkdir /nfs/home/"$username"/.ssh/
-cp /root/.ssh/id_rsa /nfs/home/"$username"/.ssh/id_rsa
+cd /nfs/home/"$username"/.ssh/
+cp /root/.ssh/id_rsa git_rsa
+cat > config << EOF
+Host github.com
+	IdentityFile ~/.ssh/git_rsa
+	User git
+EOF
+ssh-keygen -f id_rsa -q -N ""
+cp id_rsa.pub authorized_keys
 chown "$username":pjama-group /nfs/home/"$username" /nfs/home/"$username"/.ssh -R
-chmod 600 /nfs/home/"$username"/.ssh/id_rsa
+chmod 600 authorized_keys git_rsa id_rsa
+chmod 644 config id_rsa.pub

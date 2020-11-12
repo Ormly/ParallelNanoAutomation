@@ -793,8 +793,6 @@ EOF
 mkdir -p /root/.ssh
 mv id_rsa /root/.ssh/id_rsa
 mv known_hosts /root/.ssh/known_hosts
-
-cat > create_user << EOF
 #!/bin/bash
 #Takes can take in 0..2 parameters
 #0 parameters - prompts for username and password
@@ -838,7 +836,6 @@ chown "\$username":pjama-group /nfs/home/"\$username" /nfs/home/"\$username"/.ss
 chmod 600 /nfs/home/"\$username"/.ssh/id_rsa
 EOF
 
-cat > create_admin << EOF
 #!/bin/bash
 #Takes can take in 0..2 parameters
 #0 parameters - prompts for username and password
@@ -879,19 +876,7 @@ make -C /var/yp
 mkdir /nfs/home/"\$username"/.ssh/
 cp /root/.ssh/id_rsa /nfs/home/"\$username"/.ssh/id_rsa
 chown "\$username":pjama-group /nfs/home/"\$username" /nfs/home/"\$username"/.ssh -R
-chmod 600 /nfs/home/"\$username"/.ssh/id_rsa
-EOF
-
-chmod +x create_user
-chmod +x create_admin
-
-# Add users to the database
-addgroup --gid 1110 pjama-group
-addgroup --gid 1111 pjama-admin
-addgroup --gid 1112 pjama-user
-./create_user $userAccount
-./create_admin $adminAccount
-
+chmod 600 /nfs/home/"\$username"/.ssh/id_r
 mkdir /nfs/scripts/
 cd /nfs/scripts/
 git clone git@github.com:Ormly/ParallelNanoAutomation.git automation
@@ -915,6 +900,17 @@ done
 
 chown "$adminAccount":pjama-group /nfs/
 chmod 775
+
+cd automation
+chmod +x create_user
+chmod +x create_admin
+
+# Add users to the database
+addgroup --gid 1110 pjama-group
+addgroup --gid 1111 pjama-admin
+addgroup --gid 1112 pjama-user
+./create_user $userAccount
+./create_admin $adminAccount
 
 apt-get install software-properties-common members-y
 apt-add-repository ppa:ansible/ansible -y
