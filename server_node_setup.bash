@@ -6,10 +6,12 @@ wcno=2
 adminAccount=pjamaadmin
 userAccount=user01
 
+systemctl stop --now apt-daily{,-upgrade}.{timer,service}
+
 #Updates, timezone and hostname
 echo "Updating may take a while..."
-until apt update -y > /dev/null 2>&1; do :; done
-until apt full-upgrade -y > /dev/null 2>&1; do :; done
+until apt update -y; do :; done
+until apt full-upgrade -y; do :; done
 
 #Set ip address, change
 nmcli c modify Wired\ connection\ $wcno ipv4.addresses 192.168.21.1/24 ipv4.dns "192.168.21.1,8.8.8.8" ipv4.method manual
@@ -890,11 +892,41 @@ addgroup --gid 1112 pjama-user
 ./create_user $userAccount
 ./create_admin $adminAccount
 
+mkdir /nfs/scripts/
+cd /nfs/scripts/
+git clone git@github.com:Ormly/ParallelNanoAutomation.git automation
+git clone git@github.com:Ormly/ParallelNano_Lisa_Beacon.git beacon
+git clone git@github.com:Ormly/ParallelNano_Lisa_Beacon_Agent.git beacon_agent
+git clone git@github.com:Ormly/ParallelNano_Lisa_Lighthouse.git lighthouse
+git clone git@github.com:Ormly/ParallelNano_Lisa_Tempo.git tempo
+git clone git@github.com:Ormly/ParallelNanoShowcase.git showcase
+chmod -R g+rws .
+chown -R "$adminAccount":pjama-group .
+
+for D in *; do
+	if [ -d "${D}" ]; then
+	cd /nfs/scripts/$D/
+	git config core.sharedRepository group
+	git pull
+	chmod -R g+rws .
+	chown -R "$adminAccount":pjama-group .
+	fi
+done
+
 chown "$adminAccount":pjama-group /nfs/
-chmod 775 /nfs/
+chmod 775
 
 apt-get install software-properties-common members-y
 apt-add-repository ppa:ansible/ansible -y
 apt-get install openssh-server build-essential mpich ansible -y
+
+# Web server
+apt-get install apt-transport-https ca-certificates curl gnupg-agent software-properties-common -y
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+sudo add-apt-repository \
+   "deb [arch=amd64] https://download.docker.com/linux/ubuntu \
+   $(lsb_release -cs) \
+   stable"
+apt-get install docker-ce docker-ce-cli containerd.io -y
 
 reboot
