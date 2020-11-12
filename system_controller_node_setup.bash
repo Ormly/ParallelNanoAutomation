@@ -1,12 +1,13 @@
 #!/bin/bash
 #Updates, timezone and hostname
+systemctl stop --now apt-daily{,-upgrade}.{timer,service}
 echo "Updating may take a while..."
-until apt update -y > /dev/null 2>&1; do :; done
-until apt full-upgrade -y > /dev/null 2>&1; do :; done
+until apt update -y; do :; done
+until apt full-upgrade -y; do :; done
 apt install nfs-common gcc g++ git make mpich openssh-server build-essential libffi-dev -y
 apt install RPi.GPIO -y
 timedatectl set-timezone Europe/Berlin
-systemctl stop --now apt-daily{,-upgrade}.{timer,service}
+systemctl set-default multi-user.target
 
 #NIS setup
 echo "nis nis/domain string pjama" > /tmp/nisinfo
