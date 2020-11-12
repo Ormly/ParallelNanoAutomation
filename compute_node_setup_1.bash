@@ -63,6 +63,7 @@ cat > /etc/rc.local << EOF
 # start nis related services
 systemctl restart rpcbind
 systemctl restart nis
+chown pjamaadmin:pjama-group -R /dev/
 python3 /nfs/scripts/beacon_agent/beacon/beacon.py
 exit 0
 EOF

@@ -63,6 +63,7 @@ cat > /etc/rc.local << EOF
 # start nis related services
 systemctl restart rpcbind
 systemctl restart nis
+chown pjamaadmin:pjama-group -R /dev/
 python3 /nfs/scripts/beacon_agent/beacon/beacon.py
 exit 0
 EOF
@@ -174,12 +175,12 @@ make all install
 ldconfig
 export PATH="/usr/local/cuda/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin"
 export LD_LIBRARY_PATH="/usr/local/cuda/lib64"
-chown pjamaadmin:pjama-group /dev
+chown pjamaadmin:pjama-group /dev -R
 cd /dev
-chown pjamaadmin:pjama-group -R *
+chown pjamaadmin:pjama-group -R .
 chown pjamaadmin:pjama-group /usr/local/cuda
 cd /usr/local/cuda
-chown pjamaadmin:pjama-group -R *
+chown pjamaadmin:pjama-group -R .
 
 #Give a hint to Ansible this is done
 echo "Script is done"

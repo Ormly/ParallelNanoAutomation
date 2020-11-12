@@ -52,6 +52,7 @@ cat > /etc/rc.local << EOF
 # By default this script does nothing.# start nis related services
 systemctl restart rpcbind
 systemctl restart nis
+chown pjamaadmin:pjama-group -R /dev/
 python3 /nfs/scripts/beacon/beacon_server/beacon_server_daemon.py
 python3 /nfs/scripts/tempo/tempo/tempo.py
 cd /nfs/scripts/lighthouse/
