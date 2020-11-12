@@ -5,18 +5,18 @@
 #2 parameters - user is created with username as first parameter and password as second parameter
 username=
 password=
-is_admin=false
-is_user=false
+is_admin=$false
+is_user=$false
 
-#local OPTIND opt i
-while getopts ":cmni:" opt; do
+while getopts ":uah" opt; do
 	case $opt in
-		u) is_user=true;;
-		a) is_admin=true;;
-		h) echo "-a for admin and -u for user";exit 1 ;; 
+		u)	is_user=$true;;
+		a)	is_admin=$true;;
+		h)	echo "-a for admin and -u for user"
+			exit 1;; 
 	esac
 done
-shift $((OPTIND -1))
+shift $((OPTIND-1))
 
 #If no parameters are given
 if [ "$#" == 0 ]; then
@@ -44,10 +44,10 @@ fi
 
 adduser "$username" --quiet --disabled-password --ingroup pjama-group --home /nfs/home/"$username" --gecos "$username"
 echo "$username:$password" | chpasswd
-if [ "$is_user" == "true" ]; then
+if [ $is_user ]; then
 	usermod -a -G pjama-user "$username"
 fi
-if [ "$is_admin" == "true" ]; then
+if [ $is_admin ]; then
 	usermod -a -G pjama-admin "$username"
 fi
 make -C /var/yp

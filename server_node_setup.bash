@@ -828,7 +828,8 @@ addgroup --gid 1112 pjama-user
 ./create_user.bash -u $userAccount
 ./create_user.bash -a $adminAccount
 
-apt-get install software-properties-common members-y
+apt-get install software-properties-common -y
+apt-get install members -y
 apt-add-repository ppa:ansible/ansible -y
 apt-get install openssh-server build-essential mpich ansible -y
 
