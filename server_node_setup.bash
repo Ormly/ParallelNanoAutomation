@@ -802,6 +802,17 @@ git clone git@github.com:Ormly/ParallelNano_Lisa_Beacon_Agent.git beacon_agent
 git clone git@github.com:Ormly/ParallelNano_Lisa_Lighthouse.git lighthouse
 git clone git@github.com:Ormly/ParallelNano_Lisa_Tempo.git tempo
 git clone git@github.com:Ormly/ParallelNanoShowcase.git showcase
+
+# Add users to the database
+cd automation
+chmod +x create_user.bash
+addgroup --gid 1110 pjama-group
+addgroup --gid 1111 pjama-admin
+addgroup --gid 1112 pjama-user
+./create_user.bash -u $userAccount
+./create_user.bash -a $adminAccount
+cd ..
+
 chmod -R g+rws .
 chown -R "$adminAccount":pjama-group .
 
@@ -817,16 +828,6 @@ done
 
 chown "$adminAccount":pjama-group /nfs/
 chmod 775
-
-cd automation
-chmod +x create_user.bash
-
-# Add users to the database
-addgroup --gid 1110 pjama-group
-addgroup --gid 1111 pjama-admin
-addgroup --gid 1112 pjama-user
-./create_user.bash -u $userAccount
-./create_user.bash -a $adminAccount
 
 apt-get install software-properties-common -y
 apt-get install members -y
