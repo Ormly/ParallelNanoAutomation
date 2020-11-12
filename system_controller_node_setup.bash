@@ -6,6 +6,7 @@ until apt full-upgrade -y > /dev/null 2>&1; do :; done
 apt install nfs-common gcc g++ git make mpich openssh-server build-essential libffi-dev -y
 apt install RPi.GPIO -y
 timedatectl set-timezone Europe/Berlin
+systemctl stop --now apt-daily{,-upgrade}.{timer,service}
 
 #NIS setup
 echo "nis nis/domain string pjama" > /tmp/nisinfo
@@ -157,3 +158,5 @@ python3 setup.py install
 
 cd /nfs/scripts/tempo
 python3 setup.py install
+
+chown -R pjamaadmin:pjama-group /dev
