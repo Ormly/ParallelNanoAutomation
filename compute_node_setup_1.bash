@@ -1,5 +1,6 @@
 #!/bin/bash
 echo "Updating may take a while..."
+systemctl stop --now apt-daily{,-upgrade}.{timer,service}
 until apt update -y > /dev/null 2>&1; do :; done
 until apt full-upgrade -y > /dev/null 2>&1; do :; done
 apt-get install nfs-common gcc g++ git make mpich openssh-server build-essential python3-pip libffi-dev -y
@@ -62,6 +63,7 @@ cat > /etc/rc.local << EOF
 # start nis related services
 systemctl restart rpcbind
 systemctl restart nis
+chown pjamaadmin:pjama-group -R /dev/
 python3 /nfs/scripts/beacon_agent/beacon/beacon.py
 exit 0
 EOF
