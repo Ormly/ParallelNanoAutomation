@@ -130,7 +130,6 @@ uptime_vars=()
 
 for n in ${loop_num[@]}
 do
-	echo "Loop num $n"
 	temp1=$(ssh johnny0$n "uptime")
 	temp1=${temp1##*"up"}
 	uptime_vars+=${temp1%%,*}
@@ -185,17 +184,16 @@ do
 		if [[ $? == *"0"* ]]; then
 			echo -e "$RED ERROR: johnny0$t not properly shut down $NC"
 			exit 7
-		else
-			echo -e "$johnny0$t: $GREEN SHUTDOWN $NC"
 		fi
+		
+		echo -e "$johnny0$t: $GREEN SHUTDOWN $NC"
 	fi
 done
 
 #Turn on the nodes again
-ssh pjamaadmin@lisa "cd /nfs/scripts/automation/lisa_scripts; for t in ${loop_num[@]} do echo "Turning on johnny0$t again"; python3 power_control.py power $t; done"
+ssh pjamaadmin@lisa 'cd /nfs/scripts/automation/lisa_scripts; for i in {1..8}; do echo "Turning on johnny0$i again"; python3 power_control.py power $i; done; exit'
 echo "All johnnys turned back on, waiting for them to be responsive"
-sleep(1000)
-exit
+sleep 15
 
 #8
 #Update_upgrade.yml
@@ -203,7 +201,7 @@ echo "Testing Update_upgrade.yml playbook..."
 #Run playbook
 update_status=$(ansible-playbook /nfs/scripts/automation/playbooks/update_upgrade.yml -i "/nfs/scripts/automation/inventory.ini" -e target=nodes)
 #Check update cache
-if [[ $update_status == *"unreachable=1"* ]]; then #|| $update_status == *"failed=1"* ]]; then
+if [[ $update_status == *"unreachable=1"* || $update_status == *"failed=1"* ]]; then
 	echo -e "$RED ERROR: All nodes not updated/upgraded $NC"
 	exit 8
 else
