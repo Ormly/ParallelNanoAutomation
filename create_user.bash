@@ -44,7 +44,7 @@ else
 	exit
 fi
 
-adduser "$username" --quiet --disabled-password --ingroup pjama-group --home /nfs/home/"$username" --gecos "$username"
+adduser "$username" --quiet --disabled-password --ingroup pjama-group --home /nfs/home/"$username" --gecos "$username" || exit 1
 echo "$username:$password" | chpasswd
 if [ $is_user == 1 ]; then
 	usermod -a -G pjama-user "$username"
