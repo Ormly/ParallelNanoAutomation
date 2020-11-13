@@ -34,7 +34,7 @@ elif [ "$#" == 1 ]; then
 	password="$1"
 
 #If username and password are given
-elif [ "$#" == 2]; then
+elif [ "$#" == 2 ]; then
 	username="$1"
 	password="$2"
 	
