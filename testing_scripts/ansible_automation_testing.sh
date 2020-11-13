@@ -15,6 +15,7 @@ do
 	johnnyX=$(host johnny0$var) >/dev/null
 	if [[ $? -eq 0 ]]; then
 		loop_num+=($var)
+	fi
 done
 
 #1
@@ -136,7 +137,7 @@ do
 done
 
 #Run playbook
-#ansible-playbook /nfs/scripts/automation/playbooks/reboot.yml -i "/nfs/scripts/automation/inventory.ini" -e target=nodes
+ansible-playbook /nfs/scripts/automation/playbooks/reboot.yml -i "/nfs/scripts/automation/inventory.ini" -e target=nodes
 #Check up-time
 for m in ${loop_num[@]}
 do
@@ -175,7 +176,7 @@ do
 	fi
 done
 #Run playbook
-ansible-playbook /nfs/scripts/automation/playbooks/reboot.yml -i "/nfs/scripts/automation/inventory.ini" -e target=nodes
+ansible-playbook /nfs/scripts/automation/playbooks/shutdown.yml -i "/nfs/scripts/automation/inventory.ini" -e target=nodes
 #Ping the machine to see if it is shut down
 for t in ${johnny_up[@]}
 do
