@@ -4,10 +4,18 @@ RED='\033[0;31m'
 GREEN='\033[0;32m'
 NC='\033[0m'
 
-loop_num=(1 2 3 4 5 6 7 8)
+loop_num=()
 
 #Start tests-----------------------------------
 echo "Starting Ansible automation testing"
+
+#check which Johnnys are all up and keep them as an iterable var
+for var in 1 2 3 4 5 6 7 8
+do
+	johnnyX=$(host johnny0$var) >/dev/null
+	if [[ $? -eq 0 ]]; then
+		loop_num+=($var)
+done
 
 #1
 #Check if ansile is installed
@@ -152,33 +160,32 @@ done
 #Shutdown.yml
 echo "Testing Shutdown.yml playbook..."
 #Ping the machine to make sure it is online
-johnny_status=()
-for var in $loop_num[@]
+johnny_up=()
+for var in ${loop_num[@]}
 do
-	johnnyX=$(host johnny$var) >/dev/null
+	johnnyX=$(host johnny0$var) >/dev/null
 	if [[ $? -eq 0 ]]; then
 		ping -q -c 1 johnny$var ;
 		if [[ $? -eq 0 ]]; then
-			echo -e "$johnny$var: $GREEN UP $NC"
-			johnny_status+=(1)
+			echo -e "$johnny0$var: $GREEN UP $NC"
+			johnny_up+=($var)
 		else
-			echo -e "$johnny$var: $RED DOWN $NC"
-			johnny_status+=(0)
+			echo -e "$johnny0$var: $RED DOWN $NC"
 		fi
 	fi
 done
 #Run playbook
 ansible-playbook /nfs/scripts/automation/playbooks/reboot.yml -i "/nfs/scripts/automation/inventory.ini" -e target=nodes
 #Ping the machine to see if it is shut down
-for t in $johnny_status[@]; 
+for t in ${johnny_up[@]}
 do
 	if [[ t -eq 1 ]]; then
-		ping -q -c 1 johnny[@] 
-		if [[ $? -neq 0 ]]; then
-			echo -e "$johnny[@]: $GREEN SHUTDOWN $NC"
-		else
-			echo -e "$RED ERROR: johnny[@] not properly shut down $NC"
+		ping -q -c 1 johnny0$t
+		if [[ $? == *"0"* ]]; then
+			echo -e "$RED ERROR: johnny0$t not properly shut down $NC"
 			exit 7
+		else
+			echo -e "$johnny0$t: $GREEN SHUTDOWN $NC"
 		fi
 	fi
 done
@@ -186,7 +193,7 @@ done
 #Turn on the nodes again
 ssh pjamaadmin@lisa
 cd /nfs/scripts/automation/lisa_scripts
-for t in $loop_num;
+for t in ${loop_num[@]}
 do
 	echo "Turning on johnny$t again"
 	python3 power_control.py power $t
