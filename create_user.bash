@@ -41,7 +41,7 @@ elif [ "$#" == 2 ]; then
 	password="$2"
 	
 else
-	exit
+	exit 1
 fi
 
 adduser "$username" --quiet --disabled-password --ingroup pjama-group --home /nfs/home/"$username" --gecos "$username" || exit 1
