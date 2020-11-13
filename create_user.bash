@@ -61,15 +61,6 @@ cat > config << EOF
 Host github.com
 	IdentityFile ~/.ssh/git_rsa
 	User git
-
-Host johnny\d\d
-  CheckHostIP no
-
-Host lisa
-  CheckHostIP no
-
-Host bobby
-  CheckHostIP no
 EOF
 ssh-keygen -f id_rsa -q -N ""
 cp id_rsa.pub authorized_keys
