@@ -13,7 +13,9 @@ while getopts ":uah" opt; do
 		u)	is_user=1;;
 		a)	is_admin=1;;
 		h)	echo "-a for admin and -u for user"
-			exit 1;; 
+		    exit 1;;
+		*)  echo "Invalid argument"
+		    exit 1;;
 	esac
 done
 shift $((OPTIND-1))
@@ -21,9 +23,9 @@ shift $((OPTIND-1))
 #If no parameters are given
 if [ "$#" == 0 ]; then
 	echo -n "Enter a username: "
-	read username
-	echo -n "Enter a password: ["$username"] "
-	read password
+	read -r username
+	echo -n "Enter a password: [$username] "
+	read -r password
 	if [ "$password" == "" ]; then
 		password="$username"
 	fi
