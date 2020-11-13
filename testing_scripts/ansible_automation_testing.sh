@@ -37,7 +37,7 @@ echo "Note that during the automation testing it will be removed again."
 read package_name
 
 #check remote system
-package_status=$(ssh johnny01 "dpkg -s $package_name") >/dev/null
+package_status=$(ssh johnny0$loop_num "dpkg -s $package_name") >/dev/null
 
 #if package is already installed on remote systems abort the test
 if [[ $package_status == *"Status: install ok installed"* ]]; then
@@ -66,7 +66,7 @@ fi
 #Remove_apt_package.yml
 echo "Testing Remove_apt_package.yml playbook..."
 #Check the package is installed
-package_status=$(ssh johnny01 "dpkg -s $package_name") >/dev/null
+package_status=$(ssh johnny0$loop_num "dpkg -s $package_name") >/dev/null
 
 #if package is not installed abort the test
 if [[ $package_status != *"Status: install ok installed"* ]]; then
@@ -81,9 +81,9 @@ else
 	do
 		package_status=$(ssh johnny0$var "dpkg -s $package_name") >/dev/null
 		if [[ $package_status != *"Status: install ok installed"* ]]; then
-			echo -e "$GREEN $package_name is now uninstalled on johnny$var $NC"
+			echo -e "$GREEN $package_name is now uninstalled on johnny0$var $NC"
 		else
-			echo -e "$RED ERROR: $package_name still installed on johnny$var $NC"
+			echo -e "$RED ERROR: $package_name still installed on johnny0$var $NC"
 			exit 4
 		fi
 	done
@@ -130,7 +130,7 @@ uptime_vars=()
 for n in ${loop_num[@]}
 do
 	echo "Loop num $n"
-	temp1=$(ssh johnny$n "uptime")
+	temp1=$(ssh johnny0$n "uptime")
 	temp1=${temp1##*"up"}
 	uptime_vars+=${temp1%%,*}
 done
@@ -140,7 +140,7 @@ done
 #Check up-time
 for m in ${loop_num[@]}
 do
-	temp2=$(ssh johnny$m "uptime")
+	temp2=$(ssh johnny0$m "uptime")
 	temp2=${temp2##*"up"}
 	temp2=${temp2%%,*}
 	temp2=$(echo $temp2 | tr -d :)
@@ -165,7 +165,7 @@ for var in ${loop_num[@]}
 do
 	johnnyX=$(host johnny0$var) >/dev/null
 	if [[ $? -eq 0 ]]; then
-		ping -q -c 1 johnny$var ;
+		ping -q -c 1 johnny0$var ;
 		if [[ $? -eq 0 ]]; then
 			echo -e "$johnny0$var: $GREEN UP $NC"
 			johnny_up+=($var)
@@ -191,14 +191,7 @@ do
 done
 
 #Turn on the nodes again
-ssh pjamaadmin@lisa
-cd /nfs/scripts/automation/lisa_scripts
-for t in ${loop_num[@]}
-do
-	echo "Turning on johnny$t again"
-	python3 power_control.py power $t
-done
-
+ssh pjamaadmin@lisa "cd /nfs/scripts/automation/lisa_scripts; for t in ${loop_num[@]} do echo "Turning on johnny0$t again"; python3 power_control.py power $t; done"
 echo "All johnnys turned back on, waiting for them to be responsive"
 sleep(1000)
 exit
