@@ -4,4 +4,5 @@ if [ "$1" != "" ]; then
 	make -C /var/yp
 else
 	echo "No parameter given"
+	exit 1
 fi
