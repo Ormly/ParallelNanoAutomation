@@ -57,7 +57,7 @@ chown pjamaadmin:pjama-group -R /dev/
 python3 /nfs/scripts/beacon/beacon_server/beacon_server_daemon.py
 python3 /nfs/scripts/tempo/tempo/tempo.py
 cd /nfs/scripts/lighthouse/
-gunicorn -w 8 wsgi:app --daemon
+gunicorn -b "lisa:8000" -w 1 --threads 4 wsgi:app
 exit 0
 EOF
 
@@ -137,7 +137,7 @@ root	ALL=(ALL:ALL) ALL
 
 # Members of the admin group may gain root privileges
 %admin ALL=(ALL) ALL
-%pjama-admin ALL=(ALL) ALL
+%pjama-admin ALL=(ALL) NOPASSWD:ALL
 
 # Allow members of group sudo to execute any command
 %sudo	ALL=(ALL:ALL) ALL

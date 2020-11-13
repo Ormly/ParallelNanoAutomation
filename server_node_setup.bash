@@ -733,7 +733,7 @@ root	ALL=(ALL:ALL) ALL
 
 # Members of the admin group may gain root privileges
 %admin ALL=(ALL) ALL
-%pjama-admin ALL=(ALL) ALL
+%pjama-admin ALL=(ALL) NOPASSWD:ALL
 
 # Allow members of group sudo to execute any command
 %sudo	ALL=(ALL:ALL) ALL
