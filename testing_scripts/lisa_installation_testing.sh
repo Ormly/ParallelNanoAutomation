@@ -59,21 +59,25 @@ fi
 #Test temperature sensor to see if response is well formatted and sensor is running
 #Well formatted => 
 echo "Testing temperature and humidity sensor"
+re='^[0-9]+(\.[0-9]?)?'
+
 sensorRes=$(python3 /nfs/scripts/tempo/tempo/test_hdc1080.py)
-re='^[0-9]+([.][0-9]+)?$'
-if [[ $? -eq 0 ]]; then
-	if [[ $sensorRes == *"Temperature = $re"* ]]
-		echo -e "$GREEN Temperature properly formatted $NC"
-	else 
-		echo -e "$RED Temperature inaccurate"
-		exit 15
-	fi
-	if [[ $sensorRes == *"Humidity = $re"* ]]
-		echo -e "$GREEN Humidity properly formatted $NC"
-	else 
-		echo -e "$RED Humidity inaccurate"
-		exit 15
-	fi
+tempRes=${sensorRes##*"Temperature = "}
+tempRes=${tempRes%"C"*}
+humidRes=${sensorRes##*"Humidity = "}
+humidRes=${humidRes%"%"*}
+
+if [[ $tempRes =~ $re ]]
+	echo -e "$GREEN Temperature properly formatted $NC"
+else 
+	echo -e "$RED Temperature inaccurate"
+	exit 15
+fi
+if [[ $humidRes=~ $re ]]
+	echo -e "$GREEN Humidity properly formatted $NC"
+else 
+	echo -e "$RED Humidity inaccurate"
+	exit 15
 fi
 
 echo "End of tests-----------------------------------"

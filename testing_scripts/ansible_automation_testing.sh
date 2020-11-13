@@ -1,8 +1,5 @@
 #!/bin/bash
 
-#Note: we need to run this script as user01, then we can ssh passwordlessly into johnny user
-#account.
-
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 NC='\033[0m'
@@ -89,7 +86,7 @@ fi
 #Kickstart_compute_node.yml
 echo "Testing Kickstart_computer_node.yml playbook..."
 #Run playbook in a “pure johnny”
-kickstart_status=$(ansible-playbook /nfs/scripts/automation/playbooks/kickstart_computer_node.yml -i "/nfs/scripts/automation/inventory.ini" -e target=nodes)
+#kickstart_status=$(ansible-playbook /nfs/scripts/automation/playbooks/kickstart_computer_node.yml -i "/nfs/scripts/automation/inventory.ini" -e target=nodes)
 #Run testing johnny script
 for var in ${loop_num[@]}
 do
@@ -106,7 +103,7 @@ done
 #Kickstart_control_node.yml
 echo "Testing Kickstart_control_node.yml playbook..."
 #Run playbook in a “pure lisa”
-kickstart_status=$(ansible-playbook /nfs/scripts/automation/playbooks/kickstart_control_node.yml -i "/nfs/scripts/automation/inventory.ini" -e target=controller)
+#kickstart_status=$(ansible-playbook /nfs/scripts/automation/playbooks/kickstart_control_node.yml -i "/nfs/scripts/automation/inventory.ini" -e target=controller)
 #Run testing lisa script
 if [[ lisa_test=$(ssh lisa "/nfs/scripts/automation/testing_scripts/lisa_installation_testing.sh") ]]; then
 	echo -e "$GREEN Lisa installation succesful $NC"
@@ -187,15 +184,17 @@ do
 done
 
 #Turn on the nodes again
+ssh pjamaadmin@lisa
+cd /nfs/scripts/automation/lisa_scripts
 for t in $loop_num;
 do
-	cd /nfs/scripts/automation/lisa_scripts
 	echo "Turning on johnny$t again"
 	python3 power_control.py power $t
 done
 
 echo "All johnnys turned back on, waiting for them to be responsive"
 sleep(1000)
+exit
 
 #8
 #Update_upgrade.yml
