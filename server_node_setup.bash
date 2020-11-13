@@ -104,6 +104,14 @@ dhcp-range=192.168.21.50,192.168.21.200,12h
 dhcp-lease-max=150
 dhcp-option=option:dns-server,192.168.21.1
 dhcp-option=option:netmask,255.255.255.0
+
+dhcp-host=lisa,192.168.21.10
+dhcp-host=johnny01,192.168.21.11
+dhcp-host=johnny02,192.168.21.12
+dhcp-host=johnny03,192.168.21.13
+dhcp-host=johnny04,192.168.21.14
+dhcp-host=johnny05,192.168.21.15
+dhcp-host=johnny06,192.168.21.16
 EOF
 
 #NFS Server
