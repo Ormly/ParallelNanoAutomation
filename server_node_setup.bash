@@ -6,6 +6,7 @@ wcno=2
 adminAccount=pjamaadmin
 userAccount=user01
 
+# Stops running daily update to install quicker
 systemctl stop --now apt-daily{,-upgrade}.{timer,service}
 
 #Updates, timezone and hostname
@@ -30,7 +31,6 @@ echo iptables-persistent iptables-persistent/autosave_v6 boolean true | debconf-
 sudo apt-get -y install iptables-persistent
 echo PURGE | debconf-communicate packagename
 
-until ping -c1 www.google.com >/dev/null 2>&1; do :; done
 timedatectl set-timezone Europe/Berlin
 
 #DHCP & DNS

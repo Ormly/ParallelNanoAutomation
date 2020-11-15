@@ -7,6 +7,7 @@ apt-get install nfs-common gcc g++ git make mpich openssh-server build-essential
 timedatectl set-timezone Europe/Berlin
 systemctl set-default multi-user.target
 
+# Remove 127.0.1.1 for MPI
 cat > /etc/hosts << EOF
 127.0.0.1	localhost
 
