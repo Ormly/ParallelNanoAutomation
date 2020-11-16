@@ -57,7 +57,7 @@ chown pjamaadmin:pjama-group -R /dev/
 python3 /nfs/scripts/beacon/beacon_server/beacon_server_daemon.py
 python3 /nfs/scripts/tempo/tempo/tempo.py
 cd /nfs/scripts/lighthouse/
-gunicorn -b "lisa:8000" -w 1 --threads 4 wsgi:app
+gunicorn -b "lisa:8000" -w 1 --threads 4 wsgi:app --daemon
 exit 0
 EOF
 
