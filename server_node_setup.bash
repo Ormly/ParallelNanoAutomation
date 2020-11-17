@@ -850,5 +850,6 @@ sudo add-apt-repository \
    $(lsb_release -cs) \
    stable"
 apt-get install docker-ce docker-ce-cli containerd.io -y
+apt-get install yarn -y
 
 reboot
