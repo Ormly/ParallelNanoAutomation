@@ -819,6 +819,10 @@ addgroup --gid 1111 pjama-admin
 addgroup --gid 1112 pjama-user
 ./create_user.bash -u $userAccount
 ./create_user.bash -a $adminAccount
+
+cd /nfs/home/pjamaadmin
+git clone git@github.com:Ormly/ParallelNano_Bobby_GUI.git gui
+chown -R "$adminAccount":pjama-group .
 cd ..
 
 chmod -R g+rws .
