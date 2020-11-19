@@ -823,7 +823,7 @@ addgroup --gid 1112 pjama-user
 cd /nfs/home/pjamaadmin
 git clone git@github.com:Ormly/ParallelNano_Bobby_GUI.git gui
 chown -R "$adminAccount":pjama-group .
-cd ..
+cd /nfs
 
 chmod -R g+rws .
 chown -R "$adminAccount":pjama-group .
